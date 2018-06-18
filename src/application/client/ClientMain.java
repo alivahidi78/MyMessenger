@@ -22,10 +22,10 @@ public class ClientMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("views/StartUp.fxml"));
-        primaryStage.setTitle("Messenger");
-        scene = new Scene(root);
+        scene = new Scene(FXMLLoader.load(getClass().getResource("views/StartUp.fxml")));
+        scene.getStylesheets().add(getClass().getResource("views/stylesheets/StartUp.css").toExternalForm());
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Messenger");
         //TODO Icon
         primaryStage.show();
     }

@@ -12,20 +12,20 @@ public class StartUp extends MainController {
 
     public void signIn() {
         if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
-            new Alert(Alert.AlertType.ERROR, "Please fill all the fields.").show();
+            getNewAlert(Alert.AlertType.ERROR, "Please fill all the fields.").show();
             return;
         }
         Answer answer = GraphicEventHandler.requestSignIn(usernameField.getText(), passwordField.getText());
         switch (answer.type) {
             case SIGN_IN_ACCEPTED:
-                new Alert(Alert.AlertType.INFORMATION, "Signed in successfully!").show();
+                getNewAlert(Alert.AlertType.INFORMATION, "Signed in successfully!").show();
                 goTo("ChatScene");
                 break;
             case SIGN_IN_DENIED:
-                new Alert(Alert.AlertType.ERROR, "Wrong username and/or password!").show();
+                getNewAlert(Alert.AlertType.ERROR, "Wrong username and/or password!").show();
                 break;
             case CONNECTION_FAILED:
-                new Alert(Alert.AlertType.ERROR, "Connection refused!").show();
+                getNewAlert(Alert.AlertType.ERROR, "Connection refused!").show();
                 break;
         }
     }
