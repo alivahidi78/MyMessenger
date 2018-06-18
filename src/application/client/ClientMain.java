@@ -3,7 +3,6 @@ package application.client;
 import application.client.modules.Network;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 

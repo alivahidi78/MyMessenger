@@ -1,4 +1,4 @@
-@import "ParentStylesheet.css";
+@import "Parent.css";
 
 .dialog-pane .header-panel {
     -fx-background-color: #333;

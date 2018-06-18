@@ -13,18 +13,16 @@
     <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <SplitPane dividerPositions="0.3394648829431438" prefHeight="160.0" prefWidth="200.0">
             <ListView fx:id="contactList" maxWidth="300.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false" />
-         <VBox>
-            <children>
-                  <ListView fx:id="messageLog" prefHeight="200.0" prefWidth="195.0" VBox.vgrow="ALWAYS" />
-                  <HBox alignment="BOTTOM_CENTER" prefHeight="42.0" prefWidth="598.0" spacing="10.0">
-                      <padding>
-                          <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
-                      </padding>
-                      <TextArea fx:id="sendMessageTextArea" prefWidth="500.0" wrapText="true" HBox.hgrow="ALWAYS" />
-                      <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#sendMessage" text="Send" />
-                  </HBox>
-            </children>
-         </VBox>
+            <VBox>
+                <ListView fx:id="messageLog" prefHeight="200.0" prefWidth="195.0" VBox.vgrow="ALWAYS"/>
+                <HBox alignment="BOTTOM_CENTER" prefHeight="42.0" prefWidth="598.0" spacing="10.0">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="10.0" top="5.0"/>
+                    </padding>
+                    <TextArea fx:id="sendMessageTextArea" prefWidth="500.0" wrapText="true" HBox.hgrow="ALWAYS"/>
+                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#sendMessage" text="Send"/>
+                </HBox>
+            </VBox>
         </SplitPane>
     </SplitPane>
 </AnchorPane>

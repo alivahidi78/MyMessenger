@@ -1,7 +1,7 @@
 package application.util.user;
 
 import java.io.Serializable;
-import java.net.Socket;
+import java.util.Date;
 
 public class User implements Serializable {
     static final long serialVersionUID = 1L;
@@ -9,15 +9,30 @@ public class User implements Serializable {
     private String password;
     private String name;
     private long permanentID;
+    private Date lastSeen;
     private transient boolean isOnline;
-    private transient Socket socket;
-
     //TODO add chats, associates
     public User(String name, String username, String password) {
         this.name = name;
         this.username = username;
         this.password = password;
         //TODO create permID
+    }
+
+    public Date getLastSeen() {
+        return lastSeen;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline() {
+        isOnline = true;
+    }
+    public void setOffline(){
+        isOnline = false;
+        lastSeen = new Date();
     }
 
     public String getPassword() {
@@ -37,7 +52,7 @@ public class User implements Serializable {
     }
 
     public boolean usernameEquals(String username) {
-        return this.username.equals(username);
+        return this.username.equalsIgnoreCase(username);
     }
 
     public boolean passwordEquals(String password) {

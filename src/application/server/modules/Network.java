@@ -15,14 +15,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
  * Handles the connection between the clients and the server.
- * */
+ */
 public class Network {
     private static ServerSocket serverSocket;
     private static Database db = Database.getInstance();
+    //TODO make concurrent
+    private static ArrayList<Connection> onlineUsers = new ArrayList<>();
 
     private static void handleCCRequest(Request request, ObjectInputStream in, ObjectOutputStream out) {
         ConstantConnectionRequest ccRequest = (ConstantConnectionRequest) request;
@@ -33,8 +36,10 @@ public class Network {
             if (!user.isPresent() || !user.get().passwordEquals(password)) {
                 out.writeObject(new SignInDeniedAnswer());
             } else {
+                Connection connection = new Connection(in, out, user.get());
                 out.writeObject(new SignInAcceptedAnswer(user.get()));
-                createConstantConnection(in, out);
+                onlineUsers.add(connection);
+                createConstantConnection(connection);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +58,7 @@ public class Network {
                 out.writeObject(new SignUpDeniedAnswer());
             } else {
                 out.writeObject(new SignUpAcceptedAnswer());
-                db.addUser(new User(name,username,password));
+                db.addUser(new User(name, username, password));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,15 +95,19 @@ public class Network {
         }
     }
 
-    private static void createConstantConnection(ObjectInputStream in, ObjectOutputStream out) {
+    private static void createConstantConnection(Connection connection) {
+        ObjectInputStream in = connection.getInput();
         Thread thread = new Thread(() -> {
-            while (true) {
+            boolean connected = true;
+            while (connected) {
                 try {
                     Message message = (Message) in.readObject();
                     //TODO process message
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    e.getMessage(); //TODO disconnected
+                    connected = false;
+                    connection.disconnect();
+                    onlineUsers.remove(connection);
+                    //disconnected
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
