@@ -1,1 +1,37 @@
 @import "Parent.css";
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: #555;
+}
+
+.split-pane:vertical > .split-pane-divider {
+    -fx-background-color: #555;
+}
+
+VBox {
+    -fx-background-color: #444;
+}
+
+.text-area {
+    -fx-text-fill: #eee;
+    -fx-background-color: #444;
+    -fx-border-color: #444;
+}
+
+.text-area .content {
+    -fx-background-color: #444;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.text-area .scroll-bar{
+    -fx-background-color: #444;
+}
+
+.list-view {
+    -fx-background-color: #333;
+}
+
+.contact-list {
+    -fx-background-color: #555;
+}

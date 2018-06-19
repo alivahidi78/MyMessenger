@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: #636363;
+    -fx-background-color: #333;
 }
 
 .label {
@@ -12,17 +12,10 @@
     -fx-text-fill: #aaa;
 }
 
-.text-area {
-    -fx-text-fill: #aaa;
-}
-
-.text-area .content {
-    -fx-background-color: #575757;
-}
-
 .button {
-    -fx-background-color: #333;
-    -fx-text-fill: #aaa;
+    -fx-background-color: #444;
+    -fx-text-fill: #ccc;
+    -fx-background-radius: 0;
 }
 
 .button:hover {
@@ -31,8 +24,4 @@
 
 .button:pressed {
     -fx-background-color: #808080;
-}
-
-.list-view {
-    -fx-background-color: #575757;
 }
