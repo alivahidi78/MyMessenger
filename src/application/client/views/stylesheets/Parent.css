@@ -1,27 +1,66 @@
+* {
+    -color-num1: #333337;
+    -color-num2: #444448;
+    -color-num3: #555559;
+    -color-text-num1: #aaaaaa;
+    -color-text-num2: #cccccc;
+    -color-button: #444448;
+    -color-button-hover: #505054;
+    -color-button-press: #808084;
+    -color-text-field-background: #575757;
+    -color-text-area-border: #eeeeee;
+}
+
 .root {
-    -fx-background-color: #333;
+    -fx-background-color: -color-num1;
 }
 
 .label {
-    -fx-text-fill: #aaa;
+    -fx-text-fill: -color-text-num1;
 }
 
 .text-field {
     -fx-background-radius: 0;
-    -fx-background-color: #575757;
-    -fx-text-fill: #aaa;
+    -fx-background-color: -color-text-field-background;
+    -fx-text-fill: -color-text-num1;
 }
 
 .button {
-    -fx-background-color: #444;
-    -fx-text-fill: #ccc;
+    -fx-background-color: -color-button;
+    -fx-text-fill: -color-text-num2;
     -fx-background-radius: 0;
 }
 
 .button:hover {
-    -fx-background-color: #505050;
+    -fx-background-color: -color-button-hover;
 }
 
 .button:pressed {
-    -fx-background-color: #808080;
+    -fx-background-color: -color-button-press;
+}
+
+.menu-bar {
+    -fx-background-color: -color-num2;
+}
+
+.menu-button:hover{
+    -fx-background-color: -color-button-hover;
+}
+
+.menu-button:showing{
+    -fx-background-color: -color-button-press;
+    -fx-text-fill: -color-text-num2;
+}
+
+.menu-item {
+    -fx-background-color: -color-num1;
+    -fx-text-fill: -color-text-num1;
+}
+
+.menu-item:focused{
+    -fx-background-color: -color-num3;
+}
+
+.context-menu {
+    -fx-background-color: -color-num1;
 }

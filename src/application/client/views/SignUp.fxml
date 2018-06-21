@@ -5,21 +5,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.client.controllers.SignUp">
-   <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="300.0" prefWidth="300.0" HBox.hgrow="ALWAYS">
-         <TextField fx:id="nameField" prefHeight="35.0" promptText="Name" AnchorPane.leftAnchor="50.0"
-                    AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0"/>
-         <TextField fx:id="usernameField" prefHeight="35.0" promptText="Username" AnchorPane.leftAnchor="50.0"
-                    AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="90.0"/>
-         <TextField fx:id="passwordField" prefHeight="35.0" promptText="Password" AnchorPane.leftAnchor="50.0"
-                    AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="140.0"/>
-         <Button mnemonicParsing="false" onAction="#signUp" text="Sign Up" AnchorPane.leftAnchor="120.0"
-                 AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="210.0"/>
-         <Button mnemonicParsing="false" onAction="#goToSignIn" text="Back" AnchorPane.leftAnchor="120.0"
-                 AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="250.0"/>
+<AnchorPane prefHeight="570.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.client.controllers.SignUp">
+   <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" HBox.hgrow="ALWAYS">
+         <TextField fx:id="nameField" prefHeight="35.0" promptText="Name" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0" />
+         <TextField fx:id="usernameField" prefHeight="35.0" promptText="Username" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="90.0" />
+         <TextField fx:id="passwordField" prefHeight="35.0" promptText="Password" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="140.0" />
+         <Button mnemonicParsing="false" onAction="#signUp" text="Sign Up" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="210.0" />
+         <Button mnemonicParsing="false" onAction="#goToSignIn" text="Back" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="250.0" />
       </AnchorPane>
    </HBox>
 

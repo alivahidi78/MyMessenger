@@ -1,37 +1,49 @@
 @import "Parent.css";
 
+.split-pane {
+    -fx-background-color: transparent;
+}
+
 .split-pane:horizontal > .split-pane-divider {
-    -fx-background-color: #555;
+    -fx-background-color: -color-num3;
 }
 
 .split-pane:vertical > .split-pane-divider {
-    -fx-background-color: #555;
+    -fx-background-color: -color-num3;
 }
 
 VBox {
-    -fx-background-color: #444;
+    -fx-background-color: -color-num2;
+}
+
+#right-side {
+    -fx-background-color: -color-num3;
+}
+
+.text-field {
+    -fx-background-color: -color-num2;
 }
 
 .text-area {
-    -fx-text-fill: #eee;
-    -fx-background-color: #444;
-    -fx-border-color: #444;
+    -fx-text-fill: -color-text-area-border;
+    -fx-background-color: -color-num2;
+    -fx-border-color: -color-num2;
 }
 
 .text-area .content {
-    -fx-background-color: #444;
+    -fx-background-color: -color-num2;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
 
-.text-area .scroll-bar{
-    -fx-background-color: #444;
+.text-area .scroll-bar {
+    -fx-background-color: -color-num2;
 }
 
 .list-view {
-    -fx-background-color: #333;
+    -fx-background-color: -color-num1;
 }
 
-.contact-list {
-    -fx-background-color: #555;
+#contact-list {
+    -fx-background-color: -color-num3;
 }
