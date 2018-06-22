@@ -4,6 +4,7 @@ import application.client.modules.Network;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class ClientMain extends Application {
@@ -21,11 +22,11 @@ public class ClientMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        scene = new Scene(FXMLLoader.load(getClass().getResource("views/StartUp.fxml")));
+        scene = new Scene(FXMLLoader.load(getClass().getResource("views/fxml/StartUp.fxml")));
         scene.getStylesheets().add(getClass().getResource("views/stylesheets/StartUp.css").toExternalForm());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Messenger");
-        //TODO Icon
+        primaryStage.setTitle("My Messenger");
+        primaryStage.getIcons().add(new Image(getClass().getResource("views/images/icon.png").toExternalForm()));
         primaryStage.show();
     }
 }

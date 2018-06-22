@@ -1,7 +1,9 @@
 package application.client.controllers;
 
+import application.client.modules.Cache;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.TextArea;
 
 import java.net.URL;
@@ -11,6 +13,7 @@ public class ChatScene extends MainController implements Initializable {
     public TextArea sendMessageTextArea;
     public ListView messageLog;
     public ListView contactList;
+    public Menu userMenuButton;
 
     public void sendMessage() {
         //TODO
@@ -20,5 +23,6 @@ public class ChatScene extends MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //TODO
+        userMenuButton.setText(Cache.currentUser.getName());
     }
 }
