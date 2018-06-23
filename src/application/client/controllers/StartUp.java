@@ -28,6 +28,7 @@ public class StartUp extends MainController {
                 getNewAlert(Alert.AlertType.ERROR, "Connection refused!").show();
                 break;
         }
+        passwordField.clear();
     }
 
     public void loadSignUpScene() {

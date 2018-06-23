@@ -1,8 +1,11 @@
 package application.server.modules;
 
+import application.util.user.SimpleUser;
 import application.util.user.User;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -11,10 +14,10 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class Database implements Serializable {
     private static Database instance;
-    private static FileHandler fh = FileHandler.getInstance();
+    private static FileHandler<Database> fh = new FileHandler<>();
 
     static {
-        Optional<Database> databaseOptional = fh.readData();
+        Optional<Database> databaseOptional = fh.readData("DATA");
         instance = databaseOptional.orElseGet(Database::new);
     }
 
@@ -28,7 +31,7 @@ public class Database implements Serializable {
     }
 
     private void saveData() {
-        fh.saveData(instance);
+        fh.saveData(instance, "DATA");
     }
 
     public Optional<User> findUserByUsername(String username) {
@@ -42,5 +45,14 @@ public class Database implements Serializable {
     public void addUser(User user) {
         users.add(user);
         saveData();
+    }
+
+    public List<SimpleUser> searchFor(String search) {
+        var result = new ArrayList<SimpleUser>();
+        for (User user : users) {
+            if ((!search.isEmpty()) && user.getUsername().startsWith(search))
+                result.add(user.getSimpleUser());
+        }
+        return result;
     }
 }

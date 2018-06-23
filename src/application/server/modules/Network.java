@@ -1,12 +1,10 @@
 package application.server.modules;
 
-import application.util.answer.SignInAcceptedAnswer;
-import application.util.answer.SignInDeniedAnswer;
-import application.util.answer.SignUpAcceptedAnswer;
-import application.util.answer.SignUpDeniedAnswer;
+import application.util.answer.*;
 import application.util.message.Message;
 import application.util.request.ConstantConnectionRequest;
 import application.util.request.Request;
+import application.util.request.SearchConnectionRequest;
 import application.util.request.SignUpRequest;
 import application.util.user.User;
 
@@ -27,42 +25,40 @@ public class Network {
     //TODO make concurrent
     private static ArrayList<Connection> onlineUsers = new ArrayList<>();
 
-    private static void handleCCRequest(Request request, ObjectInputStream in, ObjectOutputStream out) {
+    private static void handleCCRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
         ConstantConnectionRequest ccRequest = (ConstantConnectionRequest) request;
         String username = ccRequest.username;
         String password = ccRequest.password;
         Optional<User> user = db.findUserByUsername(username);
-        try {
-            if (!user.isPresent() || !user.get().passwordEquals(password)) {
-                out.writeObject(new SignInDeniedAnswer());
-            } else {
-                Connection connection = new Connection(in, out, user.get());
-                out.writeObject(new SignInAcceptedAnswer(user.get()));
-                onlineUsers.add(connection);
-                createConstantConnection(connection);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!user.isPresent() || !user.get().passwordEquals(password)) {
+            out.writeObject(new SignInDeniedAnswer());
+        } else {
+            Connection connection = new Connection(in, out, user.get());
+            out.writeObject(new SignInAcceptedAnswer(user.get()));
+            onlineUsers.add(connection);
+            createConstantConnection(connection);
         }
-
     }
 
-    private static void handleSignUpRequest(Request request, ObjectInputStream in, ObjectOutputStream out) {
+    private static void handleSignUpRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
         SignUpRequest suRequest = (SignUpRequest) request;
         String name = suRequest.name;
         String username = suRequest.username;
         String password = suRequest.password;
         Optional<User> duplicate = db.findUserByUsername(username);
-        try {
-            if (duplicate.isPresent()) {
-                out.writeObject(new SignUpDeniedAnswer());
-            } else {
-                out.writeObject(new SignUpAcceptedAnswer());
-                db.addUser(new User(name, username, password));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (duplicate.isPresent()) {
+            out.writeObject(new SignUpDeniedAnswer());
+        } else {
+            out.writeObject(new SignUpAcceptedAnswer());
+            db.addUser(new User(name, username, password));
         }
+    }
+
+    private static void handleSearchRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
+        SearchConnectionRequest scRequest = (SearchConnectionRequest) request;
+        Connection connection = new Connection(in, out, db.findUserByUsername(scRequest.username).get());
+        out.writeObject(new ConnectedAnswer());
+        createSearchConnection(connection);
     }
 
     public static void processRequests(ServerSocket serverSocket) throws IOException {
@@ -87,6 +83,10 @@ public class Network {
                         case CHANGE_USER_INFO:
                             //TODO
                             break;
+                        case SEARCH_CONNECTION:
+                            //TODO - Important
+                            handleSearchRequest(request, in, out);
+                            break;
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -94,6 +94,7 @@ public class Network {
             }).start();
         }
     }
+
 
     private static void createConstantConnection(Connection connection) {
         ObjectInputStream in = connection.getInput();
@@ -113,6 +114,27 @@ public class Network {
                 }
             }
             //TODO
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private static void createSearchConnection(Connection connection) {
+        ObjectInputStream in = connection.getInput();
+        ObjectOutputStream out = connection.getOutput();
+        Thread thread = new Thread(() -> {
+            boolean connected = true;
+            while (connected) {
+                try {
+                    String search = (String) in.readObject();
+                    out.writeObject(db.searchFor(search));
+                } catch (IOException e) {
+                    connected = false;
+                    connection.disconnect();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         });
         thread.setDaemon(true);
         thread.start();

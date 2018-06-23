@@ -2,33 +2,25 @@ package application.server.modules;
 
 import java.io.*;
 import java.util.Optional;
+
 /**
  * Handles the interactions of the program with files.
- * */
-public class FileHandler {
-    private static final String PATH = "data";
-    private static FileHandler instance = new FileHandler();
-
-    private FileHandler() {
-    }
-
-    public static FileHandler getInstance() {
-        return instance;
-    }
-
-    public void saveData(Database db) {//TODO run from separate thread
-        try (FileOutputStream fileOutputStream = new FileOutputStream(PATH);
+ */
+class FileHandler<T> {
+    void saveData(T data,String path) {//TODO run from separate thread
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path);
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
-            objectOutputStream.writeObject(db);
+            objectOutputStream.writeObject(data);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Optional<Database> readData() {
-        try (FileInputStream fileInputStream = new FileInputStream(PATH);
+    Optional<T> readData(String path) {
+        try (FileInputStream fileInputStream = new FileInputStream(path);
              ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
-            return Optional.of((Database) objectInputStream.readObject());
+            //noinspection unchecked
+            return Optional.of((T) objectInputStream.readObject());
         } catch (IOException | ClassNotFoundException e) {
             return Optional.empty();
         }
