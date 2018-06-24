@@ -4,6 +4,7 @@ import application.util.message.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.LinkedList;
 
 public class MessageReceiver {
     private ObjectInputStream in;
@@ -17,7 +18,9 @@ public class MessageReceiver {
             while (connected) {
                 try {
                     Message message = (Message) in.readObject();
-                    //TODO process message
+                    Cache.chats.computeIfAbsent(message.sender, k -> new LinkedList<>());
+                    Cache.chats.get(message.sender).add(message);
+                    GraphicEventHandler.reloadCache(message);
                 } catch (IOException e) {
                     connected = false;
                 } catch (ClassNotFoundException e) {

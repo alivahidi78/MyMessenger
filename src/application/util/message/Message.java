@@ -1,11 +1,18 @@
 package application.util.message;
 
-import application.util.user.User;
-
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class Message implements Serializable {
     static final long serialVersionUID = 1L;
-    private LinkedList<User> targets;
+    public final long sender;
+    public final LinkedList<Long> targets;
+    public final Date date;
+
+    public Message(long sender, LinkedList<Long> targets, Date date) {
+        this.sender = sender;
+        this.targets = targets;
+        this.date = date;
+    }
 }

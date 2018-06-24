@@ -2,6 +2,7 @@ package application.client.modules;
 
 import application.util.answer.Answer;
 import application.util.answer.ConnectionFailedAnswer;
+import application.util.message.TextMessage;
 import application.util.request.Request;
 import application.util.request.RequestType;
 import application.util.user.SimpleUser;
@@ -21,6 +22,8 @@ public class Network {
     private static MessageReceiver messageReceiver;
     private static ObjectOutputStream searchOutput;
     private static ObjectInputStream searchInput;
+    private static ObjectOutputStream userInfoOutput;
+    private static ObjectInputStream userInfoInput;
 
     private static Socket getNewSocket() throws IOException {
         return new Socket(host, port);
@@ -44,6 +47,11 @@ public class Network {
         searchOutput = out;
     }
 
+    private static void startUserInfoConnection(ObjectInputStream in, ObjectOutputStream out) {
+        userInfoInput = in;
+        userInfoOutput = out;
+    }
+
     public static Answer request(Request request) {
         //IS CONCURRENT???
         ObjectInputStream in;
@@ -59,6 +67,8 @@ public class Network {
                 startConstantConnection(in, out);
             if (request.type == RequestType.SEARCH_CONNECTION && answer.requestAccepted)
                 startSearchConnection(in, out);
+            if (request.type == RequestType.GET_USER_INFO && answer.requestAccepted)
+                startUserInfoConnection(in, out);
             return answer;
         } catch (IOException e) {
             return new ConnectionFailedAnswer();
@@ -88,10 +98,26 @@ public class Network {
         return new ArrayList<>();//TODO Error
     }
 
+    public synchronized static SimpleUser getUserInfo(long id) throws IOException {
+        try {
+            userInfoOutput.writeObject(id);
+            userInfoOutput.flush();
+            return (SimpleUser)  userInfoInput.readObject();
+        }catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void disconnect() throws IOException {
         constantOutput.close();
         constantInput.close();
         searchOutput.close();
         searchInput.close();
+    }
+
+    public static void sendMessage(TextMessage message) throws IOException {
+        constantOutput.writeObject(message);
+        constantOutput.flush();
     }
 }

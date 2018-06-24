@@ -2,13 +2,9 @@ package application.server.modules;
 
 import application.util.answer.*;
 import application.util.message.Message;
-import application.util.request.ConstantConnectionRequest;
-import application.util.request.Request;
-import application.util.request.SearchConnectionRequest;
-import application.util.request.SignUpRequest;
+import application.util.request.*;
 import application.util.user.SimpleUser;
 import application.util.user.User;
-import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -66,6 +62,15 @@ public class Network {
         }
     }
 
+    private static void handleUserInfoRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
+        UserInfoRequest uiRequest = (UserInfoRequest) request;
+        out.writeObject(new ConnectedAnswer());
+        out.flush();
+
+        createUserInfoConnection(in, out);
+    }
+
+
     public static void processRequests(ServerSocket serverSocket) throws IOException {
         Network.serverSocket = serverSocket;
         while (true) {
@@ -91,6 +96,9 @@ public class Network {
                         case SEARCH_CONNECTION:
                             handleSearchRequest(request, in, out);
                             break;
+                        case GET_USER_INFO:
+                            handleUserInfoRequest(request, in, out);
+                            break;
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -99,15 +107,17 @@ public class Network {
         }
     }
 
-
     private static void createConstantConnection(Connection connection) {
         ObjectInputStream in = connection.getInput();
+        connection.getUser().setOutput(connection.getOutput());
         Thread thread = new Thread(() -> {
             boolean connected = true;
             while (connected) {
                 try {
                     Message message = (Message) in.readObject();
-                    //TODO process message
+                    db.processMessage(connection.getUser(), message);
+                    //try-catch todo
+                    Network.processMessage(connection.getUser(), message);
                 } catch (IOException e) {
                     connected = false;
                     connection.disconnect();
@@ -141,6 +151,49 @@ public class Network {
                 } catch (ClassNotFoundException e) {
                     connected = false;
                     e.printStackTrace();
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private static void createUserInfoConnection(ObjectInputStream in, ObjectOutputStream out) {
+        Thread thread = new Thread(() -> {
+            boolean connected = true;
+            while (connected) {
+                try {
+                    Long id = (Long) in.readObject();
+                    Optional<User> user = db.findUserByID(id);
+                    if(user.isPresent())
+                        out.writeObject(user.get().getSimpleUser());
+                    else
+                        out.writeObject(null);//FIXME
+                    out.flush();
+                } catch (IOException e) {
+                    connected = false;
+                } catch (ClassNotFoundException e) {
+                    connected = false;
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private static void processMessage(User sender, Message message) {
+        Thread thread = new Thread(() -> {
+            for (Long target : message.targets) {
+                Optional<User> user = db.findUserByID(target);
+                if (user.isPresent() && user.get().isOnline()) {
+                    try {
+                        user.get().getOutput().writeObject(message);
+                        user.get().getOutput().flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });

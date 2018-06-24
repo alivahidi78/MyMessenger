@@ -1,5 +1,6 @@
 package application.server.modules;
 
+import application.util.message.Message;
 import application.util.user.SimpleUser;
 import application.util.user.User;
 import javafx.scene.image.Image;
@@ -63,5 +64,18 @@ public class Database implements Serializable {
                 result.add(user.getSimpleUser());
         }
         return result;
+    }
+
+    public void processMessage(User user, Message message) {
+        //TODO savemessage
+    }
+
+    public Optional<User> findUserByID(long target) {
+        for (User user : users) {
+            if(user.getID()==target){
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
     }
 }
