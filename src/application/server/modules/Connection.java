@@ -1,6 +1,7 @@
 package application.server.modules;
 
 import application.util.user.User;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

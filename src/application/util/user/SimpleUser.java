@@ -13,9 +13,8 @@ public class SimpleUser implements Serializable {
     static final long serialVersionUID = 1L;
     String name;
     String username;
-    Image userImg;
+    transient Image userImg;
     private long permanentID;
-
     SimpleUser(long permID) {
         this.permanentID = permID;
     }

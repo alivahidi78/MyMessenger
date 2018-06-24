@@ -47,13 +47,25 @@ public class GraphicEventHandler {
         }
     }
 
-    public static Image choosePicture() {
+    public static Image choosePicture(String defaultImgPath) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Picture");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("All Images", "*.*"));
-        File file = fileChooser.showOpenDialog(ClientMain.getStage());
-        System.out.println("file:"+file.getAbsolutePath());
-        return new Image("file:"+file.getAbsolutePath());
+                new FileChooser.ExtensionFilter("All Images", "*.*"));//TODO list extensions
+        try {
+            File file = fileChooser.showOpenDialog(ClientMain.getStage());
+            return new Image("file:" + file.getAbsolutePath());
+        } catch (NullPointerException e) {
+            return new Image(defaultImgPath);
+        }
+    }
+
+    public static void signOut() {
+        Cache.clear();
+        try {
+            Network.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

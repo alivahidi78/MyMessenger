@@ -87,4 +87,11 @@ public class Network {
         }
         return new ArrayList<>();//TODO Error
     }
+
+    public static void disconnect() throws IOException {
+        constantOutput.close();
+        constantInput.close();
+        searchOutput.close();
+        searchInput.close();
+    }
 }

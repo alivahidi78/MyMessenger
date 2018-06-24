@@ -20,8 +20,6 @@ public class MessageReceiver {
                     //TODO process message
                 } catch (IOException e) {
                     connected = false;
-                    e.printStackTrace();
-                    e.getMessage(); //TODO disconnected
                 } catch (ClassNotFoundException e) {
                     connected = false;
                     e.printStackTrace();

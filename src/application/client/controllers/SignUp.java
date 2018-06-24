@@ -3,7 +3,6 @@ package application.client.controllers;
 import application.client.modules.GraphicEventHandler;
 import application.util.answer.Answer;
 import application.util.answer.AnswerType;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -52,12 +51,17 @@ public class SignUp extends MainController implements Initializable {
     }
 
     public void chooseImage() {
-        Image image = GraphicEventHandler.choosePicture();
+        Image image = GraphicEventHandler.choosePicture(
+                getClass().getResource("../views/images/default_user.gif").toExternalForm());
         imageView.setImage(image);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+    }
+
+    public void removeImage() {
+        imageView.setImage(new Image(getClass().getResource("../views/images/default_user.gif").toExternalForm()));
     }
 }

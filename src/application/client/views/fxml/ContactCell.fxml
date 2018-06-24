@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="hBox" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="135.0" spacing="15.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <ImageView fx:id="image" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+    <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="2.0">
+        <Label fx:id="username" text="id">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin></Label>
+        <Label fx:id="name" text="Name">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font></Label>
+    </VBox>
+</HBox>
