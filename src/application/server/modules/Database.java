@@ -2,7 +2,9 @@ package application.server.modules;
 
 import application.util.user.SimpleUser;
 import application.util.user.User;
+import javafx.scene.image.Image;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +15,15 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * Holds all the client information on the server.
  */
 public class Database implements Serializable {
-    private static Database instance;
+    private static final Database instance;
     private static FileHandler<Database> fh = new FileHandler<>();
 
     static {
-        Optional<Database> databaseOptional = fh.readData("DATA");
+        Optional<Database> databaseOptional = fh.readData("data/DATA");
         instance = databaseOptional.orElseGet(Database::new);
     }
 
+    private int nextPermID = 0;
     private ConcurrentLinkedDeque<User> users = new ConcurrentLinkedDeque<>();
 
     private Database() {
@@ -31,7 +34,7 @@ public class Database implements Serializable {
     }
 
     private void saveData() {
-        fh.saveData(instance, "DATA");
+        fh.saveData(instance, "data/DATA");
     }
 
     public Optional<User> findUserByUsername(String username) {
@@ -42,8 +45,14 @@ public class Database implements Serializable {
         return Optional.empty();
     }
 
-    public void addUser(User user) {
+    public void createNewUser(String name, String username, String password) {
+        User user;
+        synchronized (instance) {
+            user = new User(nextPermID, name, username, password);
+            nextPermID++;
+        }
         users.add(user);
+//      user.setImage(); TODO default image
         saveData();
     }
 

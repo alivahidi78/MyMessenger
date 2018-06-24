@@ -6,15 +6,18 @@ import application.util.request.ConstantConnectionRequest;
 import application.util.request.Request;
 import application.util.request.SearchConnectionRequest;
 import application.util.request.SignUpRequest;
+import application.util.user.SimpleUser;
 import application.util.user.User;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Handles the connection between the clients and the server.
@@ -22,8 +25,7 @@ import java.util.Optional;
 public class Network {
     private static ServerSocket serverSocket;
     private static Database db = Database.getInstance();
-    //TODO make concurrent
-    private static ArrayList<Connection> onlineUsers = new ArrayList<>();
+    private static ConcurrentLinkedDeque<Connection> onlineUsers = new ConcurrentLinkedDeque<>();
 
     private static void handleCCRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
         ConstantConnectionRequest ccRequest = (ConstantConnectionRequest) request;
@@ -43,22 +45,25 @@ public class Network {
     private static void handleSignUpRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
         SignUpRequest suRequest = (SignUpRequest) request;
         String name = suRequest.name;
-        String username = suRequest.username;
+        String username = suRequest.username.toLowerCase();
         String password = suRequest.password;
         Optional<User> duplicate = db.findUserByUsername(username);
         if (duplicate.isPresent()) {
             out.writeObject(new SignUpDeniedAnswer());
         } else {
             out.writeObject(new SignUpAcceptedAnswer());
-            db.addUser(new User(name, username, password));
+            db.createNewUser(name, username, password);
         }
     }
 
     private static void handleSearchRequest(Request request, ObjectInputStream in, ObjectOutputStream out) throws IOException {
         SearchConnectionRequest scRequest = (SearchConnectionRequest) request;
-        Connection connection = new Connection(in, out, db.findUserByUsername(scRequest.username).get());
-        out.writeObject(new ConnectedAnswer());
-        createSearchConnection(connection);
+        Optional<User> user = db.findUserByUsername(scRequest.username);
+        if (user.isPresent()) {
+            Connection connection = new Connection(in, out, user.get());
+            out.writeObject(new ConnectedAnswer());
+            createSearchConnection(connection);
+        }
     }
 
     public static void processRequests(ServerSocket serverSocket) throws IOException {
@@ -84,7 +89,6 @@ public class Network {
                             //TODO
                             break;
                         case SEARCH_CONNECTION:
-                            //TODO - Important
                             handleSearchRequest(request, in, out);
                             break;
                     }
@@ -127,11 +131,15 @@ public class Network {
             while (connected) {
                 try {
                     String search = (String) in.readObject();
-                    out.writeObject(db.searchFor(search));
+                    List<SimpleUser> foundUsers = db.searchFor(search);
+                    foundUsers.remove(connection.getUser().getSimpleUser());
+                    out.writeObject(foundUsers);
+                    out.flush();
                 } catch (IOException e) {
                     connected = false;
                     connection.disconnect();
                 } catch (ClassNotFoundException e) {
+                    connected = false;
                     e.printStackTrace();
                 }
             }

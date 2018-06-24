@@ -10,6 +10,7 @@ abstract class MainController {
     static void goTo(String name) {
         try {
             ClientMain.getScene().setRoot(FXMLLoader.load(ClientMain.class.getResource("views/fxml/"+name+".fxml")));
+            ClientMain.getScene().getStylesheets().clear();
             ClientMain.getScene().getStylesheets().add(ClientMain.class.getResource("views/stylesheets/"+name+".css").toExternalForm());
         } catch (IOException e) {
             e.printStackTrace();

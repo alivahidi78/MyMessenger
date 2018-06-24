@@ -1,7 +1,8 @@
 package application.util.user;
 
+import javafx.scene.image.Image;
+
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * A version of user containing only vital information for other clients.
@@ -10,41 +11,21 @@ import java.util.Date;
 
 public class SimpleUser implements Serializable {
     static final long serialVersionUID = 1L;
-    private String name;
-    private String username;
+    String name;
+    String username;
+    Image userImg;
     private long permanentID;
-    private Date lastSeen;
-    private transient boolean isOnline;
 
-    SimpleUser(String name, String username) {
-        this.name = name;
-        this.username = username;
-        //TODO create permID
+    SimpleUser(long permID) {
+        this.permanentID = permID;
     }
 
-    public Date getLastSeen() {
-        return lastSeen;
-    }
-
-    public boolean isOnline() {
-        return isOnline;
-    }
-
-    public void setOnline() {
-        isOnline = true;
-    }
-
-    public void setOffline() {
-        isOnline = false;
-        lastSeen = new Date();
+    public Image getImage() {
+        return userImg;
     }
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public boolean usernameEquals(String username) {
@@ -55,10 +36,6 @@ public class SimpleUser implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof SimpleUser))
@@ -66,7 +43,8 @@ public class SimpleUser implements Serializable {
         return permanentID == ((SimpleUser) obj).permanentID;
     }
 
-    protected SimpleUser get() {
-        return this;
+    @Override
+    public String toString() {
+        return "@" + getUsername() + " " + getName();
     }
 }

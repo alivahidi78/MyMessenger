@@ -10,6 +10,11 @@ import javafx.stage.Stage;
 public class ClientMain extends Application {
 
     private static Scene scene;
+    private static Stage stage;
+
+    public static Stage getStage() {
+        return stage;
+    }
 
     public static Scene getScene() {
         return scene;
@@ -22,6 +27,7 @@ public class ClientMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
         scene = new Scene(FXMLLoader.load(getClass().getResource("views/fxml/StartUp.fxml")));
         scene.getStylesheets().add(getClass().getResource("views/stylesheets/StartUp.css").toExternalForm());
         primaryStage.setScene(scene);

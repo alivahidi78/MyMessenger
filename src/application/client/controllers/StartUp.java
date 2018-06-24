@@ -18,7 +18,6 @@ public class StartUp extends MainController {
         Answer answer = GraphicEventHandler.requestSignIn(usernameField.getText(), passwordField.getText());
         switch (answer.type) {
             case SIGN_IN_ACCEPTED:
-                getNewAlert(Alert.AlertType.INFORMATION, "Signed in successfully!").show();
                 goTo("ChatScene");
                 break;
             case SIGN_IN_DENIED:

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Network {
@@ -17,7 +18,7 @@ public class Network {
     private static int port;
     private static ObjectOutputStream constantOutput;
     private static ObjectInputStream constantInput;
-    private static Receiver constantReceiver;
+    private static MessageReceiver messageReceiver;
     private static ObjectOutputStream searchOutput;
     private static ObjectInputStream searchInput;
 
@@ -33,8 +34,8 @@ public class Network {
     private static void startConstantConnection(ObjectInputStream in, ObjectOutputStream out) {
         constantInput = in;
         constantOutput = out;
-        constantReceiver = new Receiver(in);
-        constantReceiver.start();
+        messageReceiver = new MessageReceiver(in);
+        messageReceiver.start();
         //TODO
     }
 
@@ -63,28 +64,27 @@ public class Network {
             return new ConnectionFailedAnswer();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            if (!request.isConstant && socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-//        finally {
-//            if (request.type != RequestType.CONSTANT_CONNECTION && socket != null) {
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
         return null;//TODO remove
     }
 
-    public static List<SimpleUser> getSearchResult(String s) {
+    public static List<SimpleUser> getSearchResult(String s) throws IOException {
         try {
             searchOutput.writeObject(s);
-            return (List<SimpleUser>) searchInput.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
+            searchOutput.flush();
+            //noinspection unchecked
+            return ((List<SimpleUser>) searchInput.readObject());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();//TODO Error
     }
 }

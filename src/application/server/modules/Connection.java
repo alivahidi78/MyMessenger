@@ -39,4 +39,8 @@ class Connection {
             e.printStackTrace();
         }
     }
+
+    public User getUser() {
+        return user;
+    }
 }

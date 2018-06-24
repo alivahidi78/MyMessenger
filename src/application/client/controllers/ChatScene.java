@@ -3,8 +3,7 @@ package application.client.controllers;
 import application.client.modules.Cache;
 import application.client.modules.GraphicEventHandler;
 import application.util.user.SimpleUser;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import application.util.user.User;
 import javafx.collections.FXCollections;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -15,7 +14,6 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ChatScene extends MainController implements Initializable {
     public TextArea sendMessageTextArea;
@@ -30,8 +28,8 @@ public class ChatScene extends MainController implements Initializable {
         userMenuButton.setText(Cache.currentUser.getName());
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             List<SimpleUser> list = GraphicEventHandler.searchFor(newValue);
-            contactList.setItems(FXCollections.observableArrayList(list.stream().map(SimpleUser::getUsername).collect(Collectors.toList())));
-            //TODO - important
+            contactList.setItems(FXCollections.observableArrayList(list));
+            //TODO
         });
 
     }
