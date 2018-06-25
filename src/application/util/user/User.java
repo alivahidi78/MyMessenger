@@ -1,9 +1,9 @@
 package application.util.user;
 
+import application.server.modules.connection.MessagingConnection;
 import application.util.message.Message;
 import javafx.scene.image.Image;
 
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -12,10 +12,9 @@ public class User implements Serializable {
     private Set<Long> associates = new LinkedHashSet<>();
     private String password;
     private SimpleUser info;
-    private Date lastSeen;
-    private transient ObjectOutputStream outputStream;
-    private transient boolean isOnline;
+    private transient MessagingConnection messagingConnection;
     private Map<Long, List<Message>> chats = new LinkedHashMap<>();
+
     //TODO add chats, associates
     public User(long permID, String name, String username, String password) {
         info = new SimpleUser(permID);
@@ -56,21 +55,26 @@ public class User implements Serializable {
     }
 
     public Date getLastSeen() {
-        return lastSeen;
+        return info.lastSeen;
     }
 
     public boolean isOnline() {
-        return isOnline;
+        return info.isOnline;
     }
 
-    public void setOnline() {
-        isOnline = true;
+    public void setOnline(MessagingConnection connection) {
+        info.isOnline = true;
+        this.messagingConnection = connection;
     }
 
     public void setOffline() {
-        isOnline = false;
-        lastSeen = new Date();
-        outputStream = null;
+        info.isOnline = false;
+        info.lastSeen = new Date();
+        messagingConnection = null;
+    }
+
+    public void resetOnlineState() {
+        info.isOnline = false;
     }
 
     public String getUsername() {
@@ -120,11 +124,7 @@ public class User implements Serializable {
         return info.permanentID;
     }
 
-    public ObjectOutputStream getOutput() {
-        return outputStream;
-    }
-
-    public void setOutput(ObjectOutputStream out) {
-        this.outputStream = out;
+    public MessagingConnection getConnection() {
+        return messagingConnection;
     }
 }

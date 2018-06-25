@@ -17,8 +17,8 @@ import java.util.List;
 public class Network {
     private static String host;
     private static int port;
-    private static ObjectOutputStream constantOutput;
-    private static ObjectInputStream constantInput;
+    private static ObjectOutputStream messagingOutput;
+    private static ObjectInputStream messagingInput;
     private static MessageReceiver messageReceiver;
     private static ObjectOutputStream searchOutput;
     private static ObjectInputStream searchInput;
@@ -34,9 +34,9 @@ public class Network {
         Network.port = port;
     }
 
-    private static void startConstantConnection(ObjectInputStream in, ObjectOutputStream out) {
-        constantInput = in;
-        constantOutput = out;
+    private static void startMessagingConnection(ObjectInputStream in, ObjectOutputStream out) {
+        messagingInput = in;
+        messagingOutput = out;
         messageReceiver = new MessageReceiver(in);
         messageReceiver.start();
         //TODO
@@ -63,11 +63,11 @@ public class Network {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(request);
             Answer answer = (Answer) in.readObject();
-            if (request.type == RequestType.CONSTANT_CONNECTION && answer.requestAccepted)
-                startConstantConnection(in, out);
+            if (request.type == RequestType.MESSAGING_CONNECTION && answer.requestAccepted)
+                startMessagingConnection(in, out);
             if (request.type == RequestType.SEARCH_CONNECTION && answer.requestAccepted)
                 startSearchConnection(in, out);
-            if (request.type == RequestType.GET_USER_INFO && answer.requestAccepted)
+            if (request.type == RequestType.USER_INFO_CONNECTION && answer.requestAccepted)
                 startUserInfoConnection(in, out);
             return answer;
         } catch (IOException e) {
@@ -102,22 +102,22 @@ public class Network {
         try {
             userInfoOutput.writeObject(id);
             userInfoOutput.flush();
-            return (SimpleUser)  userInfoInput.readObject();
-        }catch (ClassNotFoundException e){
+            return (SimpleUser) userInfoInput.readObject();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public static void disconnect() throws IOException {
-        constantOutput.close();
-        constantInput.close();
+        messageReceiver.stop();
+        messagingOutput.close();
         searchOutput.close();
         searchInput.close();
     }
 
     public static void sendMessage(TextMessage message) throws IOException {
-        constantOutput.writeObject(message);
-        constantOutput.flush();
+        messagingOutput.writeObject(message);
+        messagingOutput.flush();
     }
 }

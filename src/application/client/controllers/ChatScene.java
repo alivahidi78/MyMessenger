@@ -12,10 +12,7 @@ import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static application.client.modules.GraphicEventHandler.*;
 
@@ -25,13 +22,20 @@ public class ChatScene extends MainController implements Initializable {
     public ListView contactListView;
     public Menu userMenuButton;
     public TextField searchField;
-
+    public Label nameField;
+    public Label idField;
+    public Label lastSeenField;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        GraphicEventHandler.nameField = nameField;
+        GraphicEventHandler.idField = idField;
+        GraphicEventHandler.lastSeenField = lastSeenField;
+        updateUserInfoBar(null);
         ObservableList<SimpleUser> searchList = FXCollections.observableArrayList();
         contactList = FXCollections.observableArrayList();
         messages = FXCollections.observableArrayList();
+        userCellMap = new LinkedHashMap<>();
         messageLogListView.setItems(messages);
         contactListView.setItems(contactList);
 
@@ -49,6 +53,7 @@ public class ChatScene extends MainController implements Initializable {
                         super.updateItem(user, empty);
                         if (user != null && !empty) {
                             ContactCell cell = new ContactCell();
+                            userCellMap.put(user.getID(), cell);
                             cell.setInfo(user);
                             setGraphic(cell.getBox());
                         } else {
@@ -81,9 +86,14 @@ public class ChatScene extends MainController implements Initializable {
         contactListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             chattingUser = (SimpleUser) newValue;
             messages.clear();
-            currentChat = Cache.chats.get(chattingUser.getID());
-            if (currentChat != null)
-                messages.addAll(Cache.chats.get(chattingUser.getID()));
+            if (chattingUser != null) {
+                currentChat = Cache.chats.get(chattingUser.getID());
+                if (currentChat != null)
+                    messages.addAll(Cache.chats.get(chattingUser.getID()));
+                updateUserInfoBar(chattingUser);
+            } else {
+                updateUserInfoBar(null);
+            }
         });
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -101,7 +111,7 @@ public class ChatScene extends MainController implements Initializable {
     public void sendMessage() {
         //TODO
         String text = sendMessageTextArea.getText();
-        LinkedList<Long> targets = new LinkedList<>();
+        Set<Long> targets = new LinkedHashSet<>();
         targets.add(chattingUser.getID());
         TextMessage message = new TextMessage(text, Cache.currentUser.getID(), targets, new Date());
         if (currentChat == null) {
@@ -109,7 +119,7 @@ public class ChatScene extends MainController implements Initializable {
             Cache.chats.put(chattingUser.getID(), currentChat);
         }
         Cache.chats.get(chattingUser.getID()).add(message);
-        GraphicEventHandler.sendMessage(message);
+        GraphicEventHandler.sendTextMessage(message);
         messages.add(message);
         if (!contactList.contains(chattingUser))
             contactList.add(chattingUser);
@@ -127,5 +137,9 @@ public class ChatScene extends MainController implements Initializable {
 
     public void close() {
         System.exit(0);
+    }
+
+    public void createGroup() {
+        //TODO
     }
 }

@@ -3,6 +3,7 @@ package application.util.user;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * A version of user containing only vital information for other clients.
@@ -15,6 +16,8 @@ public class SimpleUser implements Serializable {
     String username;
     transient Image userImg;
     long permanentID;
+    Date lastSeen;
+    boolean isOnline;
 
     SimpleUser(long permID) {
         this.permanentID = permID;
@@ -22,6 +25,22 @@ public class SimpleUser implements Serializable {
 
     public long getID() {
         return permanentID;
+    }
+
+    public Date getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(Date date) {
+        lastSeen = date;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean isOnline) {
+        this.isOnline = isOnline;
     }
 
     public Image getImage() {

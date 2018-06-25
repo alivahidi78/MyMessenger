@@ -14,6 +14,7 @@ public class ContactCell {
     public ImageView image;
     public Label username;
     public Label name;
+    public Label msgNum;
 
     public ContactCell() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/fxml/ContactCell.fxml"));
@@ -32,6 +33,13 @@ public class ContactCell {
             image.setImage(new Image(getClass().getResource("../views/images/default_user.gif").toExternalForm()));
         username.setText("@" + user.getUsername());
         name.setText(user.getName());
+    }
+
+    public void addUnreadLabel(int n){
+        if(n<0)
+            msgNum.setText("");
+        else
+            msgNum.setText(String.valueOf(Integer.valueOf(msgNum.getText())+n));
     }
 
     public HBox getBox() {

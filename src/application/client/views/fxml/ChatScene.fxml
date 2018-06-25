@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -13,8 +14,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.client.controllers.ChatScene">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.client.controllers.ChatScene">
     <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <center>
             <SplitPane dividerPositions="0.3417874396135266" prefHeight="160.0" prefWidth="200.0">
@@ -27,6 +29,28 @@
                     <ListView id="contact-list" fx:id="contactListView" maxWidth="400.0" minWidth="200.0" prefWidth="208.0" VBox.vgrow="ALWAYS" />
                 </VBox>
                 <VBox>
+                    <HBox alignment="BOTTOM_LEFT" prefHeight="55.0" prefWidth="542.0" spacing="20.0">
+                        <VBox.margin>
+                            <Insets />
+                        </VBox.margin>
+                        <padding>
+                            <Insets bottom="10.0" left="5.0" right="5.0" />
+                        </padding>
+                        <VBox alignment="BOTTOM_LEFT" spacing="5.0">
+                            <HBox spacing="6.0">
+                                <Label fx:id="nameField" text="Name" wrapText="true">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="idField" prefWidth="100.0" text="id" wrapText="true" />
+                            </HBox>
+                            <Label fx:id="lastSeenField" prefWidth="300.0" text="last seen" wrapText="true" />
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                        </VBox>
+                    </HBox>
                     <ListView id="message-list" fx:id="messageLogListView" prefHeight="200.0" prefWidth="195.0" VBox.vgrow="ALWAYS" />
                     <HBox alignment="BOTTOM_CENTER" prefHeight="42.0" prefWidth="598.0">
                         <Button minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="45.0" text="File" />
@@ -42,6 +66,9 @@
                     <MenuItem mnemonicParsing="false" onAction="#openSettings" text="Settings" />
                     <MenuItem mnemonicParsing="false" onAction="#signOut" text="Sign Out" />
                     <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Create">
+                    <MenuItem mnemonicParsing="false" onAction="#createGroup" text="Create new group" />
                 </Menu>
             </MenuBar>
         </top>

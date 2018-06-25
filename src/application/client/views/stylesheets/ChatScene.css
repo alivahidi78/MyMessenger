@@ -29,8 +29,16 @@
     -fx-border-radius: 0;
 }
 
-.text-area .scroll-bar {
+.scroll-bar {
     -fx-background-color: -color-num2;
+}
+
+.scroll-bar > .thumb, .decrement-button, .increment-button {
+    -fx-background-color: -color-num3;
+}
+
+.scroll-bar > .thumb:pressed, .decrement-button:pressed, .increment-button:pressed {
+    -fx-background-color: -color-num4;
 }
 
 #message-list {
@@ -43,11 +51,11 @@
     -fx-background-radius: 0;
 }
 
-#message-list .list-cell{
+#message-list .list-cell {
     -fx-border-color: -color-num1;
 }
 
-#contact-list .list-cell{
+#contact-list .list-cell {
     -fx-border-color: -color-num3;
 }
 

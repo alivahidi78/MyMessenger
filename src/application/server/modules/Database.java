@@ -28,6 +28,7 @@ public class Database implements Serializable {
     private ConcurrentLinkedDeque<User> users = new ConcurrentLinkedDeque<>();
 
     private Database() {
+        users.forEach(User::resetOnlineState);
     }
 
     public static Database getInstance() {
@@ -53,7 +54,6 @@ public class Database implements Serializable {
             nextPermID++;
         }
         users.add(user);
-//      user.setImage(); TODO default image
         saveData();
     }
 
@@ -69,11 +69,13 @@ public class Database implements Serializable {
     public void processMessage(Message message) {
         Thread thread = new Thread(()->{
             for (Long target: message.targets){
-                Optional<User> user = instance.findUserByID(target);
+                Optional<User> user = findUserByID(target);
                 if(user.isPresent()){
                     user.get().addAssociate(message.sender);
+                    findUserByID(message.sender).get().addAssociate(target);
                     user.get().addMessage(message.sender,message);
-                    instance.findUserByID(message.sender).get().addMessage(target,message);
+                    findUserByID(message.sender).get().addMessage(target,message);
+
                 }
             }
             saveData();
