@@ -66,7 +66,6 @@ public class Network {
         UserInfoRequest uiRequest = (UserInfoRequest) request;
         out.writeObject(new ConnectedAnswer());
         out.flush();
-
         createUserInfoConnection(in, out);
     }
 
@@ -115,9 +114,9 @@ public class Network {
             while (connected) {
                 try {
                     Message message = (Message) in.readObject();
-                    db.processMessage(connection.getUser(), message);
+                    db.processMessage(message);
                     //try-catch todo
-                    Network.processMessage(connection.getUser(), message);
+                    Network.processMessage(message);
                 } catch (IOException e) {
                     connected = false;
                     connection.disconnect();
@@ -165,7 +164,7 @@ public class Network {
                 try {
                     Long id = (Long) in.readObject();
                     Optional<User> user = db.findUserByID(id);
-                    if(user.isPresent())
+                    if (user.isPresent())
                         out.writeObject(user.get().getSimpleUser());
                     else
                         out.writeObject(null);//FIXME
@@ -183,7 +182,7 @@ public class Network {
         thread.start();
     }
 
-    private static void processMessage(User sender, Message message) {
+    private static void processMessage(Message message) {
         Thread thread = new Thread(() -> {
             for (Long target : message.targets) {
                 Optional<User> user = db.findUserByID(target);

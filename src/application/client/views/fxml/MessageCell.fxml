@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<HBox fx:id="hBox" alignment="BOTTOM_LEFT" prefWidth="340.0" spacing="5.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <!--fx:controller="application.client.controllers.MessageCell"-->
+
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+    </padding>
+    <ImageView fx:id="usrImg" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+      <HBox.margin>
+         <Insets bottom="7.0" />
+      </HBox.margin>
+   </ImageView>
+    <VBox prefWidth="300.0">
+        <HBox.margin>
+            <Insets />
+        </HBox.margin>
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
+        <Label fx:id="name" text="Name">
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </Label>
+        <TextFlow prefWidth="400.0">
+            <Text fx:id="text" fill="#cdcdcd" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Text>
+        </TextFlow>
+        <Label fx:id="date" text="Date" />
+    </VBox>
+</HBox>

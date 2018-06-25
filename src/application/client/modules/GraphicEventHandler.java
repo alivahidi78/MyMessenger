@@ -23,6 +23,10 @@ import java.util.List;
 
 public class GraphicEventHandler {
     public static ObservableList<SimpleUser> contactList;
+    public static SimpleUser chattingUser;
+    public static ObservableList<Message> messages;
+    public static List<Message> currentChat;
+
     public static Answer requestSignIn(String username, String password) {
         Answer answer = Network.request(new ConstantConnectionRequest(username, password));
         if (answer.type == AnswerType.SIGN_IN_ACCEPTED) {
@@ -56,11 +60,16 @@ public class GraphicEventHandler {
         }
     }
 
-    public static SimpleUser getUserInfo(long id){
+    public static SimpleUser getUserInfo(long id) {
+        SimpleUser userInfo = Cache.usersInfo.get(id);
+        if (userInfo != null)
+            return userInfo;
         try {
-            return Network.getUserInfo(id);
-        }catch (IOException e){
-            return  null;
+            userInfo = Network.getUserInfo(id);
+            Cache.usersInfo.put(id, userInfo);
+            return userInfo;
+        } catch (IOException e) {
+            return null;
         }
     }
 
@@ -95,8 +104,13 @@ public class GraphicEventHandler {
     }
 
     public static void reloadCache(Message message) {
-        Platform.runLater(()->{
-            contactList.add(getUserInfo(message.sender));
+        Platform.runLater(() -> {
+            if (!contactList.contains(getUserInfo(message.sender)))
+                contactList.add(getUserInfo(message.sender));
+            if(chattingUser.getID() == message.sender){
+                currentChat.add(message);
+                messages.add(message);
+            }
         });
     }
 }

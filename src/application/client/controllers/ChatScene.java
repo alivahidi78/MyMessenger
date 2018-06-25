@@ -17,24 +17,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static application.client.modules.GraphicEventHandler.*;
+
 public class ChatScene extends MainController implements Initializable {
     public TextArea sendMessageTextArea;
-    public ListView messageLog;
+    public ListView messageLogListView;
     public ListView contactListView;
     public Menu userMenuButton;
     public TextField searchField;
-    private ObservableList<Message> messages;
-    private ObservableList<SimpleUser> contactList;
-    private SimpleUser chattingUser;
-    private List<Message> currentChat;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ObservableList<SimpleUser> searchList = FXCollections.observableArrayList();
         contactList = FXCollections.observableArrayList();
-        GraphicEventHandler.contactList = this.contactList;
         messages = FXCollections.observableArrayList();
-        messageLog.setItems(messages);
+        messageLogListView.setItems(messages);
         contactListView.setItems(contactList);
 
         searchList.clear();
@@ -52,6 +50,25 @@ public class ChatScene extends MainController implements Initializable {
                         if (user != null && !empty) {
                             ContactCell cell = new ContactCell();
                             cell.setInfo(user);
+                            setGraphic(cell.getBox());
+                        } else {
+                            setGraphic(null);
+                        }
+                    }
+                };
+            }
+        });
+
+        messageLogListView.setCellFactory(new Callback<ListView<Message>, ListCell<Message>>() {
+            @Override
+            public ListCell<Message> call(ListView<Message> param) {
+                return new ListCell<>() {
+                    @Override
+                    public void updateItem(Message message, boolean empty) {
+                        super.updateItem(message, empty);
+                        if (message != null && !empty) {
+                            MessageCell cell = new MessageCell();
+                            cell.setInfo(message);
                             setGraphic(cell.getBox());
                         } else {
                             setGraphic(null);
@@ -94,7 +111,8 @@ public class ChatScene extends MainController implements Initializable {
         Cache.chats.get(chattingUser.getID()).add(message);
         GraphicEventHandler.sendMessage(message);
         messages.add(message);
-        contactList.add(chattingUser);
+        if (!contactList.contains(chattingUser))
+            contactList.add(chattingUser);
         sendMessageTextArea.clear();
     }
 

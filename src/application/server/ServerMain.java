@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 public class ServerMain {
     public static void main(String[] args) {
         try {
-            Network.processRequests(new ServerSocket(8080));
+            Network.processRequests(new ServerSocket(8085));
         } catch (IOException e) {
             e.printStackTrace();
         }

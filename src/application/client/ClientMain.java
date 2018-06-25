@@ -21,7 +21,7 @@ public class ClientMain extends Application {
     }
 
     public static void main(String[] args) {
-        Network.initialize("localhost", 8080);
+        Network.initialize("localhost", 8085);
         launch(args);
     }
 

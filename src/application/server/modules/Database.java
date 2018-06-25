@@ -66,8 +66,20 @@ public class Database implements Serializable {
         return result;
     }
 
-    public void processMessage(User user, Message message) {
-        //TODO savemessage
+    public void processMessage(Message message) {
+        Thread thread = new Thread(()->{
+            for (Long target: message.targets){
+                Optional<User> user = instance.findUserByID(target);
+                if(user.isPresent()){
+                    user.get().addAssociate(message.sender);
+                    user.get().addMessage(message.sender,message);
+                    instance.findUserByID(message.sender).get().addMessage(target,message);
+                }
+            }
+            saveData();
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public Optional<User> findUserByID(long target) {

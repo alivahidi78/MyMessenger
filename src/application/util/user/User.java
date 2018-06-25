@@ -3,27 +3,33 @@ package application.util.user;
 import application.util.message.Message;
 import javafx.scene.image.Image;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
 public class User implements Serializable {
     static final long serialVersionUID = 1L;
-    Set<Long> associates;
+    private Set<Long> associates = new LinkedHashSet<>();
     private String password;
     private SimpleUser info;
     private Date lastSeen;
     private transient ObjectOutputStream outputStream;
     private transient boolean isOnline;
     private Map<Long, List<Message>> chats = new LinkedHashMap<>();
-
     //TODO add chats, associates
     public User(long permID, String name, String username, String password) {
         info = new SimpleUser(permID);
         info.name = name;
         info.username = username;
         this.password = password;
+    }
+
+    public Set<Long> getAssociates() {
+        return associates;
+    }
+
+    public void addAssociate(long id) {
+        this.associates.add(id);
     }
 
     public void addMessage(long id, Message message) {
