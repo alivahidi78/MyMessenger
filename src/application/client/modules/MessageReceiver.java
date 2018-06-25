@@ -1,5 +1,6 @@
 package application.client.modules;
 
+import application.client.controllers.GraphicController;
 import application.util.message.Message;
 import application.util.message.MessageType;
 import application.util.message.info.InfoMessageType;
@@ -9,7 +10,6 @@ import application.util.user.SimpleUser;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.LinkedList;
 
 public class MessageReceiver {
     private ObjectInputStream in;
@@ -27,14 +27,13 @@ public class MessageReceiver {
                     if (message.type == MessageType.SERVER_INFO) {
                         processServerMessage((ServerInfoMessage) message);
                     } else {
-                        Cache.chats.computeIfAbsent(message.sender, k -> new LinkedList<>());
-                        Cache.chats.get(message.sender).add(message);
-                        GraphicEventHandler.reloadCache(message);
+                        Cache.addMessage(message);
+                        GraphicController.loadMessageGraphics(message);
                     }
                 } catch (IOException e) {
                     connected = false;
                     if (!safelyDisconnected)
-                        GraphicEventHandler.showDisconnectedAlert();
+                        GraphicController.showDisconnectedAlert();
                 } catch (ClassNotFoundException e) {
                     connected = false;
                     e.printStackTrace();
@@ -45,12 +44,12 @@ public class MessageReceiver {
     }
 
     private void processServerMessage(ServerInfoMessage message) {
-        if(message.infoType == InfoMessageType.UPDATE_USER_STATUS){
+        if (message.infoType == InfoMessageType.UPDATE_USER_STATUS) {
             UserStatusInfoMessage msg = (UserStatusInfoMessage) message;
-            SimpleUser user = Cache.getUserInfo(msg.id);
+            SimpleUser user = LogicalEventHandler.getUserInfo(msg.id);
             user.setOnline(msg.isOnline);
             user.setLastSeen(msg.lastSeen);
-            GraphicEventHandler.updateUserInfoBar(user);
+            GraphicController.updateUserInfoBar(user);
         }
     }
 

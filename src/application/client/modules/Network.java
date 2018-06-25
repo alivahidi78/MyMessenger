@@ -1,10 +1,11 @@
 package application.client.modules;
 
 import application.util.answer.Answer;
+import application.util.answer.AnswerType;
 import application.util.answer.ConnectionFailedAnswer;
+import application.util.answer.SignInAcceptedAnswer;
 import application.util.message.TextMessage;
-import application.util.request.Request;
-import application.util.request.RequestType;
+import application.util.request.*;
 import application.util.user.SimpleUser;
 
 import java.io.IOException;
@@ -34,12 +35,24 @@ public class Network {
         Network.port = port;
     }
 
+    public static Answer initiateConnections(String username, String password) {
+        Answer answer = Network.request(new MessagingConnectionRequest(username, password));
+        if (answer.type == AnswerType.SIGN_IN_ACCEPTED) {
+            Cache.setCurrentUser(((SignInAcceptedAnswer) answer).user);
+            Cache.loadChats(((SignInAcceptedAnswer) answer).user.getChats());
+            Answer userInfoAnswer = Network.request(new UserInfoConnectionRequest(Cache.getCurrentUser().getUsername(),
+                    Cache.getCurrentUser().getPassword()));
+            Answer SearchConAnswer = Network.request(new SearchConnectionRequest(
+                    Cache.getCurrentUser().getUsername(), Cache.getCurrentUser().getPassword()));
+            messageReceiver.start();
+        }
+        return answer;
+    }
+
     private static void startMessagingConnection(ObjectInputStream in, ObjectOutputStream out) {
         messagingInput = in;
         messagingOutput = out;
         messageReceiver = new MessageReceiver(in);
-        messageReceiver.start();
-        //TODO
     }
 
     private static void startSearchConnection(ObjectInputStream in, ObjectOutputStream out) {
@@ -90,15 +103,16 @@ public class Network {
         try {
             searchOutput.writeObject(s);
             searchOutput.flush();
-            //noinspection unchecked
-            return ((List<SimpleUser>) searchInput.readObject());
+            List<SimpleUser> list = (List<SimpleUser>) searchInput.readObject();
+            list.forEach(Cache::loadUserInfoToCache);
+            return (list);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return new ArrayList<>();//TODO Error
     }
 
-    public synchronized static SimpleUser getUserInfo(long id) throws IOException {
+    synchronized static SimpleUser getUserInfoFromServer(long id) throws IOException {
         try {
             userInfoOutput.writeObject(id);
             userInfoOutput.flush();

@@ -3,9 +3,7 @@ package application.server.modules;
 import application.util.message.Message;
 import application.util.user.SimpleUser;
 import application.util.user.User;
-import javafx.scene.image.Image;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,25 +55,30 @@ public class Database implements Serializable {
         saveData();
     }
 
-    public List<SimpleUser> searchFor(String search) {
+    public List<SimpleUser> searchFor(User requester, String search) {
         var result = new ArrayList<SimpleUser>();
         for (User user : users) {
-            if ((!search.isEmpty()) && user.getUsername().startsWith(search))
+            if ((!search.isEmpty()) && user.getUsername().startsWith(search)
+                    && !user.equals(requester))
                 result.add(user.getSimpleUser());
+
+            //associate
+            user.addAssociate(requester.getID());
         }
         return result;
     }
 
     public void processMessage(Message message) {
-        Thread thread = new Thread(()->{
-            for (Long target: message.targets){
+        Thread thread = new Thread(() -> {
+            for (Long target : message.targets) {
                 Optional<User> user = findUserByID(target);
-                if(user.isPresent()){
-                    user.get().addAssociate(message.sender);
-                    findUserByID(message.sender).get().addAssociate(target);
-                    user.get().addMessage(message.sender,message);
-                    findUserByID(message.sender).get().addMessage(target,message);
+                if (user.isPresent()) {
 
+                    user.get().addAssociate(message.sender);//associate
+                    findUserByID(message.sender).get().addAssociate(target);
+
+                    user.get().addMessage(message.sender, message);
+                    findUserByID(message.sender).get().addMessage(target, message);
                 }
             }
             saveData();
@@ -86,7 +89,7 @@ public class Database implements Serializable {
 
     public Optional<User> findUserByID(long target) {
         for (User user : users) {
-            if(user.getID()==target){
+            if (user.getID() == target) {
                 return Optional.of(user);
             }
         }

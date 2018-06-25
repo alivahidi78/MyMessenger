@@ -1,12 +1,11 @@
 package application.client.controllers;
 
-import application.client.modules.GraphicEventHandler;
 import application.util.answer.Answer;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class StartUp extends MainController {
+public class StartUp extends GraphicController {
     public TextField usernameField;
     public PasswordField passwordField;
 
@@ -15,7 +14,7 @@ public class StartUp extends MainController {
             getNewAlert(Alert.AlertType.ERROR, "Please fill all the fields.").show();
             return;
         }
-        Answer answer = GraphicEventHandler.requestSignIn(usernameField.getText(), passwordField.getText());
+        Answer answer = requestSignIn(usernameField.getText(), passwordField.getText());
         switch (answer.type) {
             case SIGN_IN_ACCEPTED:
                 goTo("ChatScene");

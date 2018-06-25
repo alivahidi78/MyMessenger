@@ -58,7 +58,7 @@ public class MessagingConnection extends ConstantConnection {
         Thread thread = new Thread(() -> {
             for (Long target : message.targets) {
                 Optional<User> user = db.findUserByID(target);
-                if (user.isPresent() && user.get().isOnline()) {
+                if (user.isPresent() && user.get().isOnline() && user.get().getConnection() != null) {
                     user.get().getConnection().sendMessage(message);
                 }
             }

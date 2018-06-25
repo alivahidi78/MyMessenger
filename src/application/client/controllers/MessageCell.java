@@ -1,6 +1,7 @@
 package application.client.controllers;
 
-import application.client.modules.GraphicEventHandler;
+import application.client.modules.Cache;
+import application.client.modules.LogicalEventHandler;
 import application.util.message.Message;
 import application.util.message.MessageType;
 import application.util.message.TextMessage;
@@ -32,7 +33,7 @@ public class MessageCell {
     }
 
     public void setInfo(Message message) {
-        SimpleUser user = GraphicEventHandler.getUserInfo(message.sender);
+        SimpleUser user = LogicalEventHandler.getUserInfo(message.sender);
         if (user.getImage() != null)
             usrImg.setImage(user.getImage());
         else

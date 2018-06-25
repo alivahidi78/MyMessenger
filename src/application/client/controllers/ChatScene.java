@@ -1,7 +1,7 @@
 package application.client.controllers;
 
 import application.client.modules.Cache;
-import application.client.modules.GraphicEventHandler;
+import application.client.modules.LogicalEventHandler;
 import application.util.message.Message;
 import application.util.message.TextMessage;
 import application.util.user.SimpleUser;
@@ -14,36 +14,33 @@ import javafx.util.Callback;
 import java.net.URL;
 import java.util.*;
 
-import static application.client.modules.GraphicEventHandler.*;
-
-public class ChatScene extends MainController implements Initializable {
+public class ChatScene extends GraphicController implements Initializable {
     public TextArea sendMessageTextArea;
     public ListView messageLogListView;
-    public ListView contactListView;
     public Menu userMenuButton;
     public TextField searchField;
     public Label nameField;
     public Label idField;
     public Label lastSeenField;
+    public ListView contactListView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        GraphicEventHandler.nameField = nameField;
-        GraphicEventHandler.idField = idField;
-        GraphicEventHandler.lastSeenField = lastSeenField;
+        GraphicController.nameField = nameField;
+        GraphicController.idField = idField;
+        GraphicController.lastSeenField = lastSeenField;
+        GraphicController.contactListView = contactListView;
         updateUserInfoBar(null);
         ObservableList<SimpleUser> searchList = FXCollections.observableArrayList();
         contactList = FXCollections.observableArrayList();
         messages = FXCollections.observableArrayList();
-        userCellMap = new LinkedHashMap<>();
         messageLogListView.setItems(messages);
         contactListView.setItems(contactList);
-
         searchList.clear();
-        for (Long id : Cache.chats.keySet())
-            contactList.add(GraphicEventHandler.getUserInfo(id));
+        for (Long id : Cache.getChats().keySet())
+            contactList.add(LogicalEventHandler.getUserInfo(id));
         //TODO
-        userMenuButton.setText(Cache.currentUser.getName());
+        userMenuButton.setText(Cache.getCurrentUser().getName());
         contactListView.setCellFactory(new Callback<ListView<SimpleUser>, ListCell<SimpleUser>>() {
             @Override
             public ListCell<SimpleUser> call(ListView<SimpleUser> param) {
@@ -53,7 +50,6 @@ public class ChatScene extends MainController implements Initializable {
                         super.updateItem(user, empty);
                         if (user != null && !empty) {
                             ContactCell cell = new ContactCell();
-                            userCellMap.put(user.getID(), cell);
                             cell.setInfo(user);
                             setGraphic(cell.getBox());
                         } else {
@@ -87,9 +83,9 @@ public class ChatScene extends MainController implements Initializable {
             chattingUser = (SimpleUser) newValue;
             messages.clear();
             if (chattingUser != null) {
-                currentChat = Cache.chats.get(chattingUser.getID());
+                currentChat = Cache.getChat(chattingUser.getID());
                 if (currentChat != null)
-                    messages.addAll(Cache.chats.get(chattingUser.getID()));
+                    messages.addAll(Cache.getChat(chattingUser.getID()));
                 updateUserInfoBar(chattingUser);
             } else {
                 updateUserInfoBar(null);
@@ -97,7 +93,7 @@ public class ChatScene extends MainController implements Initializable {
         });
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            List<SimpleUser> list = GraphicEventHandler.searchFor(newValue);
+            List<SimpleUser> list = searchFor(newValue);
             searchList.clear();
             searchList.addAll(list);
             if (newValue.isEmpty())
@@ -113,13 +109,9 @@ public class ChatScene extends MainController implements Initializable {
         String text = sendMessageTextArea.getText();
         Set<Long> targets = new LinkedHashSet<>();
         targets.add(chattingUser.getID());
-        TextMessage message = new TextMessage(text, Cache.currentUser.getID(), targets, new Date());
-        if (currentChat == null) {
-            currentChat = new LinkedList<>();
-            Cache.chats.put(chattingUser.getID(), currentChat);
-        }
-        Cache.chats.get(chattingUser.getID()).add(message);
-        GraphicEventHandler.sendTextMessage(message);
+        TextMessage message = new TextMessage(text, Cache.getCurrentUser().getID(), targets, new Date());
+        Cache.addMessage(message);
+        LogicalEventHandler.sendTextMessage(message);
         messages.add(message);
         if (!contactList.contains(chattingUser))
             contactList.add(chattingUser);
@@ -131,7 +123,7 @@ public class ChatScene extends MainController implements Initializable {
     }
 
     public void signOut() {
-        GraphicEventHandler.signOut();
+        LogicalEventHandler.signOut();
         goTo("StartUp");
     }
 

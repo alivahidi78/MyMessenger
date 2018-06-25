@@ -19,8 +19,7 @@ public class SearchConnection extends ConstantConnection {
         while (connected) {
             try {
                 String search = (String) in.readObject();
-                List<SimpleUser> foundUsers = db.searchFor(search);
-                foundUsers.remove(user.getSimpleUser());
+                List<SimpleUser> foundUsers = db.searchFor(user,search);
                 out.writeObject(foundUsers);
                 out.flush();
             } catch (IOException e) {

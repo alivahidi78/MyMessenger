@@ -4,39 +4,57 @@ import application.util.message.Message;
 import application.util.user.SimpleUser;
 import application.util.user.User;
 
-import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cache {
-    public static User currentUser;
-    public static Map<Long, List<Message>> chats;
-    public static Map<Long, SimpleUser> usersInfo = new ConcurrentHashMap<>();
+    private static User currentUser;
 
-    public static void clear() {
+    public static void loadChats(Map<Long, List<Message>> chats) {
+        Cache.chats = chats;
+    }
+
+    private static Map<Long, List<Message>> chats;
+    private static Map<Long, SimpleUser> usersInfo = new ConcurrentHashMap<>();
+
+    public static Map<Long, List<Message>> getChats() {
+        return chats;
+    }
+
+    public static List<Message> getChat(long id) {
+        return chats.get(id);
+    }
+
+    public static void addMessage(Message message) {
+        if (chats.get(message.sender) == null) {
+            LinkedList<Message> chat = new LinkedList<>();
+            Cache.chats.put(message.sender, chat);
+        }
+        chats.get(message.sender).add(message);
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User currentUser) {
+        Cache.currentUser = currentUser;
+    }
+
+    static void clear() {
         currentUser = null;
         chats = null;
         usersInfo = new ConcurrentHashMap<>();
         //TODO
     }
 
-    public static SimpleUser getUserInfo(long id) {
-        SimpleUser userInfo = usersInfo.get(id);
-        if (userInfo != null)
-            return userInfo;
-        else
-            return getUserInfoFromServer(id);
+    static SimpleUser getUserInfoFromCache(long id) {
+        return usersInfo.get(id);
     }
 
-    public static SimpleUser getUserInfoFromServer(long id){
-        SimpleUser userInfo;
-        try {
-            userInfo = Network.getUserInfo(id);
-            usersInfo.put(id, userInfo);
-            return userInfo;
-        } catch (IOException e) {
-            return null;
-        }
+    static void loadUserInfoToCache(SimpleUser user) {
+        usersInfo.put(user.getID(), user);
     }
 }

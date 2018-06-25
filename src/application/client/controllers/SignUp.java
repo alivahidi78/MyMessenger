@@ -1,6 +1,5 @@
 package application.client.controllers;
 
-import application.client.modules.GraphicEventHandler;
 import application.util.answer.Answer;
 import application.util.answer.AnswerType;
 import javafx.fxml.Initializable;
@@ -12,7 +11,7 @@ import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SignUp extends MainController implements Initializable {
+public class SignUp extends GraphicController implements Initializable {
     public TextField nameField;
     public TextField passwordField;
     public TextField usernameField;
@@ -24,12 +23,12 @@ public class SignUp extends MainController implements Initializable {
             getNewAlert(Alert.AlertType.ERROR, "Please fill all the fields.").show();
             return;
         }
-        Answer answer = GraphicEventHandler.requestSignUp(nameField.getText(), usernameField.getText(), passwordField.getText(),
+        Answer answer = requestSignUp(nameField.getText(), usernameField.getText(), passwordField.getText(),
                 imageView.getImage());
         switch (answer.type) {
             case SIGN_UP_ACCEPTED:
                 getNewAlert(Alert.AlertType.INFORMATION, "Signed up successfully!").show();
-                Answer answer2 = GraphicEventHandler.requestSignIn(usernameField.getText(), passwordField.getText());
+                Answer answer2 = requestSignIn(usernameField.getText(), passwordField.getText());
                 if (answer2.type == AnswerType.CONNECTION_FAILED) {
                     getNewAlert(Alert.AlertType.ERROR, "Connection refused!").show();
                     break;
@@ -51,7 +50,7 @@ public class SignUp extends MainController implements Initializable {
     }
 
     public void chooseImage() {
-        Image image = GraphicEventHandler.choosePicture(
+        Image image = choosePicture(
                 getClass().getResource("../views/images/default_user.gif").toExternalForm());
         imageView.setImage(image);
     }
