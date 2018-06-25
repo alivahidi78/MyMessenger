@@ -7,6 +7,7 @@ import application.util.message.TextMessage;
 import application.util.user.SimpleUser;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -15,14 +16,19 @@ import java.net.URL;
 import java.util.*;
 
 public class ChatScene extends GraphicController implements Initializable {
-    public TextArea sendMessageTextArea;
-    public ListView messageLogListView;
     public Menu userMenuButton;
     public TextField searchField;
-    public Label nameField;
-    public Label idField;
-    public Label lastSeenField;
     public ListView contactListView;
+    @FXML
+    private ListView messageLogListView;
+    @FXML
+    private Label nameField;
+    @FXML
+    private Label idField;
+    @FXML
+    private Label lastSeenField;
+    @FXML
+    private TextArea sendMessageTextArea;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -132,6 +138,6 @@ public class ChatScene extends GraphicController implements Initializable {
     }
 
     public void createGroup() {
-        //TODO
+        goTo("CreateGroupDialog");
     }
 }
