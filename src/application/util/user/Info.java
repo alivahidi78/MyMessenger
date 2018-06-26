@@ -4,13 +4,14 @@ import javafx.scene.image.Image;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * A version of user containing only vital information for other clients.
  * (to be sent for other clients)
  */
 
-public class SimpleUser implements Serializable {
+public class Info implements Serializable {
     static final long serialVersionUID = 1L;
     String name;
     String username;
@@ -18,9 +19,23 @@ public class SimpleUser implements Serializable {
     long permanentID;
     Date lastSeen;
     boolean isOnline;
-
-    SimpleUser(long permID) {
+    boolean isGroup;
+    Set<Long> members;
+    Info(long permID) {
         this.permanentID = permID;
+    }
+
+    Info(long permID, boolean isGroup) {
+        this(permID);
+        this.isGroup = isGroup;
+    }
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public Set<Long> getMembers() {
+        return members;
     }
 
     public long getID() {
@@ -61,9 +76,9 @@ public class SimpleUser implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof SimpleUser))
+        if (!(obj instanceof Info))
             return false;
-        return permanentID == ((SimpleUser) obj).permanentID;
+        return permanentID == ((Info) obj).permanentID;
     }
 
     @Override

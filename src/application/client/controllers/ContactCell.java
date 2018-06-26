@@ -1,6 +1,6 @@
 package application.client.controllers;
 
-import application.util.user.SimpleUser;
+import application.util.user.Info;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -27,12 +27,17 @@ public class ContactCell {
         }
     }
 
-    public void setInfo(SimpleUser user) {
-        if (user.getImage() != null)
-            image.setImage(user.getImage());
-        else
-            image.setImage(new Image(getClass().getResource("../views/images/default_user.gif").toExternalForm()));
-        username.setText("@" + user.getUsername());
+    public void setInfo(Info user) {
+        if (user.isGroup()) {
+            image.setImage(new Image(getClass().getResource("../views/images/default_group.png").toExternalForm()));
+            username.setText("Group");
+        } else {
+            if (user.getImage() != null)
+                image.setImage(user.getImage());
+            else
+                image.setImage(new Image(getClass().getResource("../views/images/default_user.png").toExternalForm()));
+            username.setText("@" + user.getUsername());
+        }
         name.setText(user.getName());
         msgCount = 0;
     }

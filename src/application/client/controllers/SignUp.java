@@ -51,7 +51,7 @@ public class SignUp extends GraphicController implements Initializable {
 
     public void chooseImage() {
         Image image = choosePicture(
-                getClass().getResource("../views/images/default_user.gif").toExternalForm());
+                getClass().getResource("../views/images/default_user.png").toExternalForm());
         imageView.setImage(image);
     }
 
@@ -61,6 +61,6 @@ public class SignUp extends GraphicController implements Initializable {
     }
 
     public void removeImage() {
-        imageView.setImage(new Image(getClass().getResource("../views/images/default_user.gif").toExternalForm()));
+        imageView.setImage(new Image(getClass().getResource("../views/images/default_user.png").toExternalForm()));
     }
 }

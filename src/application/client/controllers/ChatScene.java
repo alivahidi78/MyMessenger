@@ -4,69 +4,39 @@ import application.client.modules.Cache;
 import application.client.modules.LogicalEventHandler;
 import application.util.message.Message;
 import application.util.message.TextMessage;
-import application.util.user.SimpleUser;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 public class ChatScene extends GraphicController implements Initializable {
     public Menu userMenuButton;
-    public TextField searchField;
-    public ListView contactListView;
-    @FXML
-    private ListView messageLogListView;
-    @FXML
-    private Label nameField;
-    @FXML
-    private Label idField;
-    @FXML
-    private Label lastSeenField;
-    @FXML
-    private TextArea sendMessageTextArea;
+    public ListView<Message> messageLogListView;
+    public Label nameField;
+    public Label idField;
+    public Label lastSeenField;
+    public TextArea sendMessageTextArea;
+    public VBox contactListBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        GraphicController.nameField = nameField;
-        GraphicController.idField = idField;
-        GraphicController.lastSeenField = lastSeenField;
-        GraphicController.contactListView = contactListView;
+        GraphicController.name = new SimpleStringProperty();
+        GraphicController.id = new SimpleStringProperty();
+        GraphicController.lastSeen = new SimpleStringProperty();
+        nameField.textProperty().bind(name);
+        idField.textProperty().bind(id);
+        lastSeenField.textProperty().bind(lastSeen);
         updateUserInfoBar(null);
-        ObservableList<SimpleUser> searchList = FXCollections.observableArrayList();
-        contactList = FXCollections.observableArrayList();
         messages = FXCollections.observableArrayList();
         messageLogListView.setItems(messages);
-        contactListView.setItems(contactList);
-        searchList.clear();
-        for (Long id : Cache.getChats().keySet())
-            contactList.add(LogicalEventHandler.getUserInfo(id));
-        //TODO
         userMenuButton.setText(Cache.getCurrentUser().getName());
-        contactListView.setCellFactory(new Callback<ListView<SimpleUser>, ListCell<SimpleUser>>() {
-            @Override
-            public ListCell<SimpleUser> call(ListView<SimpleUser> param) {
-                return new ListCell<>() {
-                    @Override
-                    public void updateItem(SimpleUser user, boolean empty) {
-                        super.updateItem(user, empty);
-                        if (user != null && !empty) {
-                            ContactCell cell = new ContactCell();
-                            cell.setInfo(user);
-                            setGraphic(cell.getBox());
-                        } else {
-                            setGraphic(null);
-                        }
-                    }
-                };
-            }
-        });
-
-        messageLogListView.setCellFactory(new Callback<ListView<Message>, ListCell<Message>>() {
+        messageLogListView.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Message> call(ListView<Message> param) {
                 return new ListCell<>() {
@@ -84,38 +54,29 @@ public class ChatScene extends GraphicController implements Initializable {
                 };
             }
         });
-
-        contactListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            chattingUser = (SimpleUser) newValue;
+        contactListBox.getChildren().add(getContactList());
+        selectedUser.addListener((observable, oldValue, newValue) -> {
+            chattingUser = newValue;
             messages.clear();
             if (chattingUser != null) {
                 currentChat = Cache.getChat(chattingUser.getID());
-                if (currentChat != null)
+                if (currentChat != null) {
                     messages.addAll(Cache.getChat(chattingUser.getID()));
+                }
                 updateUserInfoBar(chattingUser);
             } else {
                 updateUserInfoBar(null);
             }
         });
-
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            List<SimpleUser> list = searchFor(newValue);
-            searchList.clear();
-            searchList.addAll(list);
-            if (newValue.isEmpty())
-                contactListView.setItems(contactList);
-            else
-                contactListView.setItems(searchList);
-        });
-
     }
 
     public void sendMessage() {
         //TODO
         String text = sendMessageTextArea.getText();
-        Set<Long> targets = new LinkedHashSet<>();
-        targets.add(chattingUser.getID());
-        TextMessage message = new TextMessage(text, Cache.getCurrentUser().getID(), targets, new Date());
+        long groupID = -1;
+        if (chattingUser.isGroup())
+            groupID = chattingUser.getID();
+        TextMessage message = new TextMessage(text, Cache.getCurrentUser().getID(), groupID, chattingUser.getID(), new Date());
         Cache.addMessage(message);
         LogicalEventHandler.sendTextMessage(message);
         messages.add(message);

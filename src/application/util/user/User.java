@@ -11,13 +11,12 @@ public class User implements Serializable {
     static final long serialVersionUID = 1L;
     private Set<Long> associates = new LinkedHashSet<>();
     private String password;
-    private SimpleUser info;
+    private Info info;
     private transient MessagingConnection messagingConnection;
     private Map<Long, List<Message>> chats = new LinkedHashMap<>();
 
-    //TODO add chats, associates
     public User(long permID, String name, String username, String password) {
-        info = new SimpleUser(permID);
+        info = new Info(permID);
         info.name = name;
         info.username = username;
         this.password = password;
@@ -40,6 +39,11 @@ public class User implements Serializable {
         } else {
             chats.get(id).add(message);
         }
+    }
+
+    public void addEmptyChat(long id) {
+        List<Message> emptyList = new LinkedList<>();
+        chats.put(id, emptyList);
     }
 
     public Map<Long, List<Message>> getChats() {
@@ -116,7 +120,7 @@ public class User implements Serializable {
         return this.password.equals(password);
     }
 
-    public SimpleUser getSimpleUser() {
+    public Info getInfo() {
         return this.info;
     }
 

@@ -2,6 +2,7 @@ package application.server.modules.connection;
 
 import application.util.message.Message;
 import application.util.message.info.UserStatusInfoMessage;
+import application.util.user.Group;
 import application.util.user.User;
 
 import java.io.IOException;
@@ -17,6 +18,27 @@ public class MessagingConnection extends ConstantConnection {
         super(in, out, user);
     }
 
+    public static void processMessage(Message message) {
+        Thread thread = new Thread(() -> {
+            long target = message.target;
+            Optional<User> user = db.findUserByID(target);
+            Optional<Group> group = db.findGroupByID(target);
+            if (user.isPresent() && user.get().isOnline() && user.get().getConnection() != null) {
+                user.get().getConnection().sendMessage(message);
+            }
+            if (group.isPresent()) {
+                for (Long member : group.get().getMembers()) {
+                    Optional<User> receiver = db.findUserByID(member);
+                    if (user.isPresent() && user.get().isOnline() && user.get().getConnection() != null) {
+                        user.get().getConnection().sendMessage(message);
+                    }
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
     @Override
     protected void monitor() {
         boolean connected = true;
@@ -24,7 +46,7 @@ public class MessagingConnection extends ConstantConnection {
             try {
                 Message message = (Message) in.readObject();
                 db.processMessage(message);
-                this.processMessage(message);
+                processMessage(message);
             } catch (IOException e) {
                 connected = false;
                 disconnect();
@@ -40,31 +62,22 @@ public class MessagingConnection extends ConstantConnection {
     public void connect() {
         super.connect();
         user.setOnline(this);
-        Message message = new UserStatusInfoMessage(user.getAssociates(),
-                new Date(), true, user.getID(), new Date());
-        processMessage(message);
+        user.getAssociates().forEach((user1) -> {
+            Message message = new UserStatusInfoMessage(user1,
+                    new Date(), true, user.getID(), new Date());
+            processMessage(message);
+        });
     }
 
     @Override
     protected void disconnect() {
         user.setOffline();
         super.disconnect();
-        Message message = new UserStatusInfoMessage(user.getAssociates(),
-                new Date(), false, user.getID(), new Date());
-        processMessage(message);
-    }
-
-    private void processMessage(Message message) {
-        Thread thread = new Thread(() -> {
-            for (Long target : message.targets) {
-                Optional<User> user = db.findUserByID(target);
-                if (user.isPresent() && user.get().isOnline() && user.get().getConnection() != null) {
-                    user.get().getConnection().sendMessage(message);
-                }
-            }
+        user.getAssociates().forEach((user1)->{
+            Message message = new UserStatusInfoMessage(user1,
+                    new Date(), false, user.getID(), new Date());
+            processMessage(message);
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private synchronized void sendMessage(Message message) {

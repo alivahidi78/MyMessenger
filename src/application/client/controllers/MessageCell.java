@@ -1,11 +1,10 @@
 package application.client.controllers;
 
-import application.client.modules.Cache;
 import application.client.modules.LogicalEventHandler;
 import application.util.message.Message;
 import application.util.message.MessageType;
 import application.util.message.TextMessage;
-import application.util.user.SimpleUser;
+import application.util.user.Info;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -33,11 +32,11 @@ public class MessageCell {
     }
 
     public void setInfo(Message message) {
-        SimpleUser user = LogicalEventHandler.getUserInfo(message.sender);
+        Info user = LogicalEventHandler.getUserInfo(message.sender);
         if (user.getImage() != null)
             usrImg.setImage(user.getImage());
         else
-            usrImg.setImage(new Image(getClass().getResource("../views/images/default_user.gif").toExternalForm()));
+            usrImg.setImage(new Image(getClass().getResource("../views/images/default_user.png").toExternalForm()));
         name.setText(user.getName());
         if (message.type == MessageType.TEXT)
             text.setText(((TextMessage) message).getText());

@@ -1,13 +1,15 @@
 package application.server.modules;
 
 import application.util.message.Message;
-import application.util.user.SimpleUser;
+import application.util.user.Group;
+import application.util.user.Info;
 import application.util.user.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -24,6 +26,7 @@ public class Database implements Serializable {
 
     private int nextPermID = 0;
     private ConcurrentLinkedDeque<User> users = new ConcurrentLinkedDeque<>();
+    private ConcurrentLinkedDeque<Group> groups = new ConcurrentLinkedDeque<>();
 
     private Database() {
         users.forEach(User::resetOnlineState);
@@ -55,12 +58,12 @@ public class Database implements Serializable {
         saveData();
     }
 
-    public List<SimpleUser> searchFor(User requester, String search) {
-        var result = new ArrayList<SimpleUser>();
+    public List<Info> searchFor(User requester, String search) {
+        var result = new ArrayList<Info>();
         for (User user : users) {
             if ((!search.isEmpty()) && user.getUsername().startsWith(search)
                     && !user.equals(requester))
-                result.add(user.getSimpleUser());
+                result.add(user.getInfo());
 
             //associate
             user.addAssociate(requester.getID());
@@ -70,15 +73,19 @@ public class Database implements Serializable {
 
     public void processMessage(Message message) {
         Thread thread = new Thread(() -> {
-            for (Long target : message.targets) {
-                Optional<User> user = findUserByID(target);
-                if (user.isPresent()) {
+            long target = message.target;
+            Optional<User> user = findUserByID(target);
+            Optional<Group> group = findGroupByID(target);
+            if (user.isPresent()) {
+                user.get().addAssociate(message.sender);//associate
+                findUserByID(message.sender).get().addAssociate(target);
+                user.get().addMessage(message.sender, message);
+                findUserByID(message.sender).get().addMessage(target, message);
+            }
 
-                    user.get().addAssociate(message.sender);//associate
-                    findUserByID(message.sender).get().addAssociate(target);
-
-                    user.get().addMessage(message.sender, message);
-                    findUserByID(message.sender).get().addMessage(target, message);
+            if (group.isPresent()) {
+                for (long member : group.get().getMembers()) {
+                    findUserByID(member).get().addMessage(message.group, message);
                 }
             }
             saveData();
@@ -94,5 +101,33 @@ public class Database implements Serializable {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<Group> findGroupByID(long target) {
+        for (Group group : groups) {
+            if (group.getID() == target)
+                return Optional.of(group);
+        }
+        return Optional.empty();
+    }
+
+    public long createGroup(String name, Set<Long> members) {
+        Group group;
+        long id;
+        synchronized (instance) {
+            id = nextPermID;
+            group = new Group(id, name, members);
+            groups.add(group);
+            nextPermID++;
+        }
+        Thread thread = new Thread(() -> {
+            for (long member : members) {
+                Optional<User> user = findUserByID(member);
+                user.ifPresent(user1 -> user1.addEmptyChat(id));
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+        return id;
     }
 }

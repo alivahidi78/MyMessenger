@@ -11,7 +11,7 @@ public abstract class ConstantConnection {
     ObjectOutputStream out;
     ObjectInputStream in;
     User user;
-    Database db = Database.getInstance();
+    static Database db = Database.getInstance();
 
     ConstantConnection(ObjectInputStream in, ObjectOutputStream out, User user) {
         this.in = in;

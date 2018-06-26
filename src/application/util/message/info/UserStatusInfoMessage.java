@@ -8,8 +8,8 @@ public class UserStatusInfoMessage extends ServerInfoMessage {
     public final long id;
     public final Date lastSeen;
 
-    public UserStatusInfoMessage(Set<Long> targets, Date date, boolean isOnline, long id, Date lastSeen) {
-        super(InfoMessageType.UPDATE_USER_STATUS, targets, date);
+    public UserStatusInfoMessage(long target, Date date, boolean isOnline, long id, Date lastSeen) {
+        super(InfoMessageType.UPDATE_USER_STATUS, target, date);
         this.id = id;
         this.isOnline = isOnline;
         this.lastSeen = lastSeen;

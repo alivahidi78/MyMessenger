@@ -4,9 +4,10 @@ import application.util.answer.Answer;
 import application.util.answer.AnswerType;
 import application.util.answer.ConnectionFailedAnswer;
 import application.util.answer.SignInAcceptedAnswer;
+import application.util.message.Message;
 import application.util.message.TextMessage;
 import application.util.request.*;
-import application.util.user.SimpleUser;
+import application.util.user.Info;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -99,11 +100,11 @@ public class Network {
         return null;//TODO remove
     }
 
-    public static List<SimpleUser> getSearchResult(String s) throws IOException {
+    public static List<Info> getSearchResult(String s) throws IOException {
         try {
             searchOutput.writeObject(s);
             searchOutput.flush();
-            List<SimpleUser> list = (List<SimpleUser>) searchInput.readObject();
+            List<Info> list = (List<Info>) searchInput.readObject();
             list.forEach(Cache::loadUserInfoToCache);
             return (list);
         } catch (ClassNotFoundException e) {
@@ -112,11 +113,11 @@ public class Network {
         return new ArrayList<>();//TODO Error
     }
 
-    synchronized static SimpleUser getUserInfoFromServer(long id) throws IOException {
+    synchronized static Info getUserInfoFromServer(long id) throws IOException {
         try {
             userInfoOutput.writeObject(id);
             userInfoOutput.flush();
-            return (SimpleUser) userInfoInput.readObject();
+            return (Info) userInfoInput.readObject();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -126,11 +127,13 @@ public class Network {
     public static void disconnect() throws IOException {
         messageReceiver.stop();
         messagingOutput.close();
+        userInfoInput.close();
+        userInfoOutput.close();
         searchOutput.close();
         searchInput.close();
     }
 
-    public static void sendMessage(TextMessage message) throws IOException {
+    public static void sendMessage(Message message) throws IOException {
         messagingOutput.writeObject(message);
         messagingOutput.flush();
     }

@@ -1,0 +1,29 @@
+@import "ChatScene.css";
+
+#selected-users{
+    -fx-background-color: -color-num4;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+}
+#selected-users .list-cell{
+    -fx-border-color: -color-num4;
+}
+
+
+#selected-users .list-cell:filled {
+    -fx-background-color: -color-num3;
+}
+
+#selected-users .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #828e91;
+    -fx-text-fill: #414141;
+}
+
+#selected-users .list-cell:filled:hover {
+    -fx-background-color: #838986;
+    -fx-text-fill: #444444;
+}
+
+#selected-users .list-cell:empty {
+    -fx-background-color: -color-num4;
+}

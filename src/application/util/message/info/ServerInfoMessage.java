@@ -9,8 +9,8 @@ import java.util.Set;
 public abstract class ServerInfoMessage extends Message {
     public final InfoMessageType infoType;
 
-    ServerInfoMessage(InfoMessageType infoType, Set<Long> targets, Date date) {
-        super(MessageType.SERVER_INFO, -2, targets, date);
+    ServerInfoMessage(InfoMessageType infoType, long target, Date date) {
+        super(MessageType.SERVER_INFO, -2,-2, target, date);
         this.infoType = infoType;
     }
 

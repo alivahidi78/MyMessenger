@@ -44,11 +44,11 @@
     -fx-background-color: -color-num2;
 }
 
-.menu-button:hover{
+.menu-button:hover {
     -fx-background-color: -color-button-hover;
 }
 
-.menu-button:showing{
+.menu-button:showing {
     -fx-background-color: -color-button-press;
     -fx-text-fill: -color-text-num2;
 }
@@ -58,10 +58,50 @@
     -fx-text-fill: -color-text-num1;
 }
 
-.menu-item:focused{
+.menu-item:focused {
     -fx-background-color: -color-num3;
 }
 
 .context-menu {
     -fx-background-color: -color-num1;
+}
+
+.scroll-bar {
+    -fx-background-color: -color-num2;
+}
+
+.scroll-bar > .thumb, .decrement-button, .increment-button {
+    -fx-background-color: -color-num3;
+}
+
+.scroll-bar > .thumb:pressed, .decrement-button:pressed, .increment-button:pressed {
+    -fx-background-color: -color-num4;
+}
+
+#contact-list {
+    -fx-background-color: -color-num3;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+}
+
+#contact-list .list-cell {
+    -fx-border-color: -color-num3;
+}
+
+#contact-list .list-cell:filled {
+    -fx-background-color: -color-num2;
+}
+
+#contact-list .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #828e91;
+    -fx-text-fill: #414141;
+}
+
+#contact-list .list-cell:filled:hover {
+    -fx-background-color: #838986;
+    -fx-text-fill: #444444;
+}
+
+#contact-list .list-cell:empty {
+    -fx-background-color: -color-num3;
 }

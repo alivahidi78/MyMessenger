@@ -4,6 +4,8 @@ import application.server.modules.connection.MessagingConnection;
 import application.server.modules.connection.SearchConnection;
 import application.server.modules.connection.UserInfoConnection;
 import application.util.answer.*;
+import application.util.message.Message;
+import application.util.message.info.GroupAdditionInfoMessage;
 import application.util.request.*;
 import application.util.user.User;
 
@@ -12,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -58,7 +61,7 @@ public class Network {
         try {
             out.writeObject(new ConnectedAnswer());
             out.flush();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         UserInfoConnection connection = new UserInfoConnection(in, out);
@@ -83,6 +86,25 @@ public class Network {
         }
     }
 
+    private static void handlerGroupCreationRequest(Request request, ObjectOutputStream out) {
+        GroupCreationRequest gcRequest = (GroupCreationRequest) request;
+        Thread thread = new Thread(() -> {
+            long groupID = db.createGroup(gcRequest.name, gcRequest.members);
+            gcRequest.members.forEach((user1)->{
+                Message message = new GroupAdditionInfoMessage(user1, groupID, new Date());
+                MessagingConnection.processMessage(message);
+            });
+        });
+        thread.setDaemon(true);
+        thread.start();
+        try {
+            out.writeObject(new AcceptedAnswer());
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void processRequests(ServerSocket serverSocket) throws IOException {
         Network.serverSocket = serverSocket;
@@ -97,20 +119,22 @@ public class Network {
                         case MESSAGING_CONNECTION:
                             handleMConnectionRequest(request, in, out);
                             break;
-                        case SIGN_UP:
-                            handleSignUpRequest(request, out);
-                            break;
-                        case UPLOAD_FILE:
-                            //TODO
-                            break;
-                        case CHANGE_USER_INFO:
-                            //TODO
-                            break;
                         case SEARCH_CONNECTION:
                             handleSearchRequest(request, in, out);
                             break;
                         case USER_INFO_CONNECTION:
                             handleUserInfoRequest(request, in, out);
+                            break;
+                        case SIGN_UP:
+                            handleSignUpRequest(request, out);
+                            break;
+                        case GROUP_CREATION:
+                            handlerGroupCreationRequest(request, out);
+                        case UPLOAD_FILE:
+                            //TODO
+                            break;
+                        case CHANGE_USER_INFO:
+                            //TODO
                             break;
                     }
                 } catch (IOException | ClassNotFoundException e) {

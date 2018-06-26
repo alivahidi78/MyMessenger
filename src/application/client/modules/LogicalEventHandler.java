@@ -1,13 +1,16 @@
 package application.client.modules;
 
+import application.util.answer.Answer;
 import application.util.message.TextMessage;
-import application.util.user.SimpleUser;
+import application.util.request.GroupCreationRequest;
+import application.util.user.Info;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class LogicalEventHandler {
-    public static SimpleUser getUserInfo(long id) {
-        SimpleUser info = Cache.getUserInfoFromCache(id);
+    public static Info getUserInfo(long id) {
+        Info info = Cache.getUserInfoFromCache(id);
         if (info == null) {
             try {
                 info = Network.getUserInfoFromServer(id);
@@ -20,12 +23,12 @@ public class LogicalEventHandler {
     }
 
     public static void signOut() {
-        Cache.clear();
         try {
             Network.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Cache.clear();
     }
 
     public static void sendTextMessage(TextMessage message) {
@@ -34,5 +37,11 @@ public class LogicalEventHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Answer requestGroupCreation(String name, Set<Long> groupMembers) {
+        groupMembers.add(Cache.getCurrentUser().getID());
+        return Network.request(new GroupCreationRequest(Cache.getCurrentUser().getUsername(),
+                Cache.getCurrentUser().getPassword(), name, groupMembers));
     }
 }

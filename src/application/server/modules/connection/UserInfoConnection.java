@@ -1,5 +1,6 @@
 package application.server.modules.connection;
 
+import application.util.user.Group;
 import application.util.user.User;
 
 import java.io.IOException;
@@ -20,8 +21,11 @@ public class UserInfoConnection extends ConstantConnection {
             try {
                 Long id = (Long) in.readObject();
                 Optional<User> user = db.findUserByID(id);
+                Optional<Group> group = db.findGroupByID(id);
                 if (user.isPresent())
-                    out.writeObject(user.get().getSimpleUser());
+                    out.writeObject(user.get().getInfo());
+                else if (group.isPresent())
+                    out.writeObject(group.get().getInfo());
                 else
                     out.writeObject(null);//FIXME
                 out.flush();

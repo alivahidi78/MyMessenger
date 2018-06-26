@@ -7,33 +7,34 @@ import application.client.modules.Network;
 import application.util.answer.Answer;
 import application.util.message.Message;
 import application.util.request.SignUpRequest;
-import application.util.user.SimpleUser;
+import application.util.user.Info;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class GraphicController {
-    static ObservableList<SimpleUser> contactList;
-    static SimpleUser chattingUser;
+    static ObservableList<Info> contactList;
+    static Info chattingUser;
     static ObservableList<Message> messages;
     static List<Message> currentChat;
-    static Label nameField;
-    static Label idField;
-    static Label lastSeenField;
-    static ListView contactListView;
+    static StringProperty name;
+    static StringProperty id;
+    static StringProperty lastSeen;
+    static ObjectProperty<Info> selectedUser;
+    private static Parent contactListFXML;
+
 
     static void goTo(String name) {
         try {
@@ -43,6 +44,16 @@ public class GraphicController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static Parent getContactList() {
+        if (contactListFXML == null)
+            try {
+                contactListFXML = FXMLLoader.load(ClientMain.class.getResource("views/fxml/ContactList.fxml"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        return contactListFXML;
     }
 
     static Alert getNewAlert(Alert.AlertType alertType, String text) {
@@ -56,11 +67,11 @@ public class GraphicController {
     }
 
 
-    static Answer requestSignUp(String name, String username, String password, Image userImg) {
+    static Answer requestSignUp(String name, String username, String password, Image img) {
         return Network.request(new SignUpRequest(name, username, password));
     }
 
-    static List<SimpleUser> searchFor(String s) {
+    static List<Info> searchFor(String s) {
         try {
             return Network.getSearchResult(s);
         } catch (IOException e) {
@@ -82,13 +93,19 @@ public class GraphicController {
         }
     }
 
-    public static void loadMessageGraphics(Message message) {
+    public static void loadUserInfoToList(Info info) {
         Platform.runLater(() -> {
-            SimpleUser info = LogicalEventHandler.getUserInfo(message.sender);
             if (!contactList.contains(info)) {
                 contactList.add(info);
             }
+        });
 
+    }
+
+    public static void loadMessageGraphics(Message message) {
+        Platform.runLater(() -> {
+            Info info = LogicalEventHandler.getUserInfo(message.sender);
+            loadUserInfoToList(info);
             if (chattingUser != null && chattingUser.getID() == message.sender) {
                 currentChat.add(message);
                 messages.add(message);
@@ -118,21 +135,20 @@ public class GraphicController {
         });
     }
 
-    public static void updateUserInfoBar(SimpleUser user) {
+    public static void updateUserInfoBar(Info user) {
         Platform.runLater(() -> {
-            if (user == null) {
-                nameField.setText("");
-                idField.setText("");
-                lastSeenField.setText("");
+            if (user == null || user.isGroup()) {
+                name.setValue("");
+                id.setValue("");
+                lastSeen.setValue("");
             } else if (chattingUser != null && chattingUser.equals(user)) {
-                nameField.setText(user.getName());
-                idField.setText("@" + user.getUsername());
+                name.setValue(user.getName());
+                id.setValue("@" + user.getUsername());
                 if (user.isOnline())
-                    lastSeenField.setText("Online");
+                    lastSeen.setValue("Online");
                 else
-                    lastSeenField.setText("Last Seen at " + user.getLastSeen());
+                    lastSeen.setValue("Last Seen at " + user.getLastSeen());
             }
         });
-
     }
 }

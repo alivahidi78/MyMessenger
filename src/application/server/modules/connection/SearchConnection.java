@@ -1,6 +1,6 @@
 package application.server.modules.connection;
 
-import application.util.user.SimpleUser;
+import application.util.user.Info;
 import application.util.user.User;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class SearchConnection extends ConstantConnection {
         while (connected) {
             try {
                 String search = (String) in.readObject();
-                List<SimpleUser> foundUsers = db.searchFor(user,search);
+                List<Info> foundUsers = db.searchFor(user,search);
                 out.writeObject(foundUsers);
                 out.flush();
             } catch (IOException e) {
