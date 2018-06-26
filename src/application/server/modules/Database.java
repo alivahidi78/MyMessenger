@@ -82,7 +82,6 @@ public class Database implements Serializable {
                 user.get().addMessage(message.sender, message);
                 findUserByID(message.sender).get().addMessage(target, message);
             }
-
             if (group.isPresent()) {
                 for (long member : group.get().getMembers()) {
                     findUserByID(member).get().addMessage(message.group, message);

@@ -104,11 +104,19 @@ public class GraphicController {
 
     public static void loadMessageGraphics(Message message) {
         Platform.runLater(() -> {
-            Info info = LogicalEventHandler.getUserInfo(message.sender);
-            loadUserInfoToList(info);
-            if (chattingUser != null && chattingUser.getID() == message.sender) {
-                currentChat.add(message);
-                messages.add(message);
+            Info info;
+            if (message.isFromGroup) {
+                if (chattingUser != null && chattingUser.getID() == message.group) {
+//                    currentChat.add(message);
+                    messages.add(message);
+                }
+            } else {
+                info = LogicalEventHandler.getUserInfo(message.sender);
+                loadUserInfoToList(info);
+                if (chattingUser != null && chattingUser.getID() == message.sender) {
+                    currentChat.add(message);
+                    messages.add(message);
+                }
             }
         });
     }

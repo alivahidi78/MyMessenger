@@ -27,10 +27,11 @@ public class MessagingConnection extends ConstantConnection {
                 user.get().getConnection().sendMessage(message);
             }
             if (group.isPresent()) {
-                for (Long member : group.get().getMembers()) {
+                for (long member : group.get().getMembers()) {
                     Optional<User> receiver = db.findUserByID(member);
-                    if (user.isPresent() && user.get().isOnline() && user.get().getConnection() != null) {
-                        user.get().getConnection().sendMessage(message);
+                    if (receiver.isPresent() && member != message.sender && receiver.get().isOnline()
+                            && receiver.get().getConnection() != null) {
+                        receiver.get().getConnection().sendMessage(message);
                     }
                 }
             }
@@ -73,7 +74,7 @@ public class MessagingConnection extends ConstantConnection {
     protected void disconnect() {
         user.setOffline();
         super.disconnect();
-        user.getAssociates().forEach((user1)->{
+        user.getAssociates().forEach((user1) -> {
             Message message = new UserStatusInfoMessage(user1,
                     new Date(), false, user.getID(), new Date());
             processMessage(message);
