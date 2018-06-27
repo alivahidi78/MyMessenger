@@ -1,5 +1,6 @@
 package application.client.controllers;
 
+import application.client.modules.Cache;
 import application.client.modules.LogicalEventHandler;
 import application.util.message.FileMessage;
 import application.util.message.Message;
@@ -7,6 +8,7 @@ import application.util.message.MessageType;
 import application.util.message.TextMessage;
 import application.util.user.Info;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
@@ -23,6 +25,7 @@ public class MessageCell {
     public ImageView usrImg;
     public HBox hBox;
     public ProgressIndicator progressIndicator;
+    public Button downloadButton;
 
     public MessageCell() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../views/fxml/MessageCell.fxml"));
@@ -37,6 +40,8 @@ public class MessageCell {
     public void setInfo(Message message) {
         Info user = LogicalEventHandler.getUserInfo(message.sender);
         progressIndicator.progressProperty();
+        downloadButton.setVisible(false);
+        downloadButton.setDisable(true);
         if (user.getImage() != null)
             usrImg.setImage(user.getImage());
         else
@@ -48,8 +53,13 @@ public class MessageCell {
         }
         if (message.type == MessageType.FILE) {
             progressIndicator.setVisible(true);
+            if(((FileMessage)message).progress!=null)
             progressIndicator.progressProperty().bind(((FileMessage)message).progress);
             text.setText(((FileMessage)message).name);
+            if(message.sender!=Cache.getCurrentUser().getID()) {
+                downloadButton.setVisible(true);
+                downloadButton.setDisable(false);
+            }
         }
         date.setText(message.date.toString());
     }

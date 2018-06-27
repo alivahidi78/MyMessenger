@@ -2,12 +2,11 @@ package application.client.modules;
 
 import application.client.controllers.GraphicController;
 import application.util.answer.Answer;
-import application.util.message.TextMessage;
+import application.util.message.FileMessage;
+import application.util.message.Message;
 import application.util.request.GroupCreationRequest;
-import application.util.request.UploadFileRequest;
 import application.util.user.Info;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.LongProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class LogicalEventHandler {
         GraphicController.clear();
     }
 
-    public static void sendTextMessage(TextMessage message) {
+    public static void sendMessage(Message message) {
         try {
             Network.sendMessage(message);
         } catch (IOException e) {
@@ -51,7 +50,7 @@ public class LogicalEventHandler {
                 Cache.getCurrentUser().getPassword(), name, groupMembers));
     }
 
-    public static void sendFileToServer(File file, DoubleProperty property) throws Exception {
-        Network.sendFile(file,property);
+    public static void sendFileToServer(FileMessage message, File file, DoubleProperty property) throws Exception {
+        Network.sendFile(message, file, property);
     }
 }

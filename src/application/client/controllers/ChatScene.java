@@ -5,7 +5,6 @@ import application.client.modules.LogicalEventHandler;
 import application.util.message.FileMessage;
 import application.util.message.Message;
 import application.util.message.TextMessage;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +18,6 @@ import javafx.util.Callback;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
 public class ChatScene extends GraphicController implements Initializable {
@@ -85,7 +83,7 @@ public class ChatScene extends GraphicController implements Initializable {
             groupID = chattingUser.getID();
         TextMessage message = new TextMessage(text, Cache.getCurrentUser().getID(), groupID, chattingUser.getID(), new Date());
         Cache.addMessage(message);
-        LogicalEventHandler.sendTextMessage(message);
+        LogicalEventHandler.sendMessage(message);
         messages.add(message);
         if (!contactList.contains(chattingUser))
             contactList.add(chattingUser);
@@ -123,7 +121,7 @@ public class ChatScene extends GraphicController implements Initializable {
         Task<Void> t = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                LogicalEventHandler.sendFileToServer(file, property);
+                LogicalEventHandler.sendFileToServer(fileMessage, file, property);
                 return null;
             }
         };

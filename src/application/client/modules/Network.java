@@ -4,12 +4,12 @@ import application.util.answer.Answer;
 import application.util.answer.AnswerType;
 import application.util.answer.ConnectionFailedAnswer;
 import application.util.answer.SignInAcceptedAnswer;
+import application.util.message.FileMessage;
 import application.util.message.Message;
 import application.util.request.*;
 import application.util.user.Info;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,28 +145,19 @@ public class Network {
         messagingOutput.flush();
     }
 
-    static void sendFile(File file,DoubleProperty property) throws Exception {
+    static void sendFile(FileMessage message, File file, DoubleProperty property) throws Exception {
         Request request = new UploadFileRequest(Cache.getCurrentUser().getUsername(),
-                Cache.getCurrentUser().getPassword(), file.length(),file.getName());
+                Cache.getCurrentUser().getPassword(), file.length(), file.getName());
         ObjectInputStream in;
         ObjectOutputStream out;
         Socket socket = null;
         Answer answer;
-        try {
-            socket = getNewSocket();
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(request);
-            answer = (Answer) in.readObject();
-            FileHandler.sendFileToStream(out, file.getAbsolutePath(), property);
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        socket = getNewSocket();
+        in = new ObjectInputStream(socket.getInputStream());
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(request);
+        answer = (Answer) in.readObject();
+        FileHandler.sendFileToStream(out, file.getAbsolutePath(), property);
+        sendMessage(message);
     }
 }
