@@ -7,6 +7,7 @@ import application.util.answer.SignInAcceptedAnswer;
 import application.util.message.Message;
 import application.util.request.*;
 import application.util.user.Info;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 
@@ -144,13 +145,12 @@ public class Network {
         messagingOutput.flush();
     }
 
-    static void sendFile(File file) {
+    static void sendFile(File file,DoubleProperty property) throws Exception {
         Request request = new UploadFileRequest(Cache.getCurrentUser().getUsername(),
                 Cache.getCurrentUser().getPassword(), file.length(),file.getName());
         ObjectInputStream in;
         ObjectOutputStream out;
         Socket socket = null;
-        LongProperty property = new SimpleLongProperty();
         Answer answer;
         try {
             socket = getNewSocket();
@@ -158,14 +158,7 @@ public class Network {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(request);
             answer = (Answer) in.readObject();
-            //TODO moveUpException
             FileHandler.sendFileToStream(out, file.getAbsolutePath(), property);
-        } catch (IOException e) {
-            answer = new ConnectionFailedAnswer();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             if (socket != null) {
                 try {

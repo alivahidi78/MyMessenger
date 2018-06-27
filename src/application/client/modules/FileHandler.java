@@ -1,5 +1,6 @@
 package application.client.modules;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 
 import java.io.*;
@@ -24,7 +25,7 @@ class FileHandler {
         o.close();
     }
 
-    static void sendFileToStream(OutputStream stream, String path, LongProperty totalUpload) throws Exception {
+    static void sendFileToStream(OutputStream stream, String path, DoubleProperty totalUpload) throws Exception {
         File file = Paths.get(path).toAbsolutePath().toFile();
         FileInputStream i = new FileInputStream(file);
         DataOutputStream outputStream = new DataOutputStream(stream);
@@ -33,7 +34,8 @@ class FileHandler {
         while ((read = i.read(buffer)) > 0) {
             Thread.sleep(1); ///todo remove
             outputStream.write(buffer, 0, read);
-            totalUpload.setValue(totalUploaded);
+            totalUploaded += read;
+            totalUpload.setValue((double)(totalUploaded)/file.length());
         }
         outputStream.close();
     }

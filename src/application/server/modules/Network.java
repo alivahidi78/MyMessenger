@@ -9,11 +9,13 @@ import application.util.message.info.GroupAdditionInfoMessage;
 import application.util.request.*;
 import application.util.user.User;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.Optional;
 
@@ -90,8 +92,8 @@ public class Network {
         UploadFileRequest r = (UploadFileRequest) request;
         try {
             out.writeObject(new UploadFileAnswer());
-            FileHandler.saveFileFromStream(in, "data/" + r.username + "/"
-                    + ((UploadFileRequest) request).fileName);//TODO change,moveUp exception
+            FileHandler.saveFileFromStream(in, "data/" +
+            ((UploadFileRequest) request).fileName);//TODO change,moveUp exception
         } catch (Exception e) {
             e.printStackTrace();
         }

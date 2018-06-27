@@ -30,8 +30,7 @@ class FileHandler<T> {
     static void saveFileFromStream(InputStream stream, String path) throws Exception {
         byte[] buffer = new byte[1024];
         DataInputStream inputStream = new DataInputStream(stream);
-        File file = Paths.get(path).toAbsolutePath().toFile();
-        OutputStream o = new FileOutputStream(file);
+        OutputStream o = new FileOutputStream(path);
         int read;
         while ((read = inputStream.read(buffer)) > 0) {
             o.write(buffer, 0, read);

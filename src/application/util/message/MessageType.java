@@ -1,5 +1,5 @@
 package application.util.message;
 
 public enum MessageType {
-    TEXT,SERVER_INFO
+    TEXT,SERVER_INFO,FILE
 }

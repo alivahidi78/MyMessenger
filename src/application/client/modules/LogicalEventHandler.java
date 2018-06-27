@@ -6,6 +6,8 @@ import application.util.message.TextMessage;
 import application.util.request.GroupCreationRequest;
 import application.util.request.UploadFileRequest;
 import application.util.user.Info;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class LogicalEventHandler {
                 Cache.getCurrentUser().getPassword(), name, groupMembers));
     }
 
-    public static void sendFileToServer(File file) {
-        Network.sendFile(file);
+    public static void sendFileToServer(File file, DoubleProperty property) throws Exception {
+        Network.sendFile(file,property);
     }
 }

@@ -2,10 +2,15 @@ package application.client.controllers;
 
 import application.client.modules.Cache;
 import application.client.modules.LogicalEventHandler;
+import application.util.message.FileMessage;
 import application.util.message.Message;
 import application.util.message.TextMessage;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -14,6 +19,7 @@ import javafx.util.Callback;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 
 public class ChatScene extends GraphicController implements Initializable {
@@ -104,8 +110,28 @@ public class ChatScene extends GraphicController implements Initializable {
     }
 
     public void sendFile() {
+        DoubleProperty property = new SimpleDoubleProperty();
         File file = chooseFile();
-        if(file!=null)
-            LogicalEventHandler.sendFileToServer(file);
+        if (file == null) {
+            return;
+        }
+        long groupID = -1;
+        if (chattingUser.isGroup())
+            groupID = chattingUser.getID();
+        FileMessage fileMessage = new FileMessage(Cache.getCurrentUser().getID(), groupID,
+                chattingUser.getID(), new Date(), file.getName());
+        Task<Void> t = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                LogicalEventHandler.sendFileToServer(file, property);
+                return null;
+            }
+        };
+        Cache.addMessage(fileMessage);
+        messages.add(fileMessage);
+        fileMessage.progress.bind(property);
+        Thread thread = new Thread(t);
+        thread.setDaemon(true);
+        thread.start();
     }
 }
