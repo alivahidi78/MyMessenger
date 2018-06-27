@@ -5,10 +5,12 @@ import application.util.answer.AnswerType;
 import application.util.answer.ConnectionFailedAnswer;
 import application.util.answer.SignInAcceptedAnswer;
 import application.util.message.Message;
-import application.util.message.TextMessage;
 import application.util.request.*;
 import application.util.user.Info;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -64,6 +66,10 @@ public class Network {
     private static void startUserInfoConnection(ObjectInputStream in, ObjectOutputStream out) {
         userInfoInput = in;
         userInfoOutput = out;
+    }
+
+    public static void uploadProfilePicture(String path, LongProperty totalDownload) {
+
     }
 
     public static Answer request(Request request) {
@@ -124,7 +130,7 @@ public class Network {
         return null;
     }
 
-    public static void disconnect() throws IOException {
+    static void disconnect() throws IOException {
         messageReceiver.stop();
         messagingOutput.close();
         userInfoInput.close();
@@ -133,8 +139,41 @@ public class Network {
         searchInput.close();
     }
 
-    public static void sendMessage(Message message) throws IOException {
+    static void sendMessage(Message message) throws IOException {
         messagingOutput.writeObject(message);
         messagingOutput.flush();
+    }
+
+    static void sendFile(File file) {
+        Request request = new UploadFileRequest(Cache.getCurrentUser().getUsername(),
+                Cache.getCurrentUser().getPassword(), file.length(),file.getName());
+        ObjectInputStream in;
+        ObjectOutputStream out;
+        Socket socket = null;
+        LongProperty property = new SimpleLongProperty();
+        Answer answer;
+        try {
+            socket = getNewSocket();
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(request);
+            answer = (Answer) in.readObject();
+            //TODO moveUpException
+            FileHandler.sendFileToStream(out, file.getAbsolutePath(), property);
+        } catch (IOException e) {
+            answer = new ConnectionFailedAnswer();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

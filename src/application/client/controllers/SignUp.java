@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -50,9 +51,9 @@ public class SignUp extends GraphicController implements Initializable {
     }
 
     public void chooseImage() {
-        Image image = choosePicture(
-                getClass().getResource("../views/images/default_user.png").toExternalForm());
-        imageView.setImage(image);
+        File file = chooseFile();
+        if (file != null)
+            imageView.setImage(new Image("file:"+file.getAbsolutePath()));
     }
 
     @Override

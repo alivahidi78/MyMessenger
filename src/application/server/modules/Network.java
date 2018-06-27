@@ -86,11 +86,22 @@ public class Network {
         }
     }
 
+    private static void handleUploadRequest(Request request, ObjectInputStream in, ObjectOutputStream out) {
+        UploadFileRequest r = (UploadFileRequest) request;
+        try {
+            out.writeObject(new UploadFileAnswer());
+            FileHandler.saveFileFromStream(in, "data/" + r.username + "/"
+                    + ((UploadFileRequest) request).fileName);//TODO change,moveUp exception
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void handlerGroupCreationRequest(Request request, ObjectOutputStream out) {
         GroupCreationRequest gcRequest = (GroupCreationRequest) request;
         Thread thread = new Thread(() -> {
             long groupID = db.createGroup(gcRequest.name, gcRequest.members);
-            gcRequest.members.forEach((user1)->{
+            gcRequest.members.forEach((user1) -> {
                 Message message = new GroupAdditionInfoMessage(user1, groupID, new Date());
                 MessagingConnection.processMessage(message);
             });
@@ -131,6 +142,9 @@ public class Network {
                         case GROUP_CREATION:
                             handlerGroupCreationRequest(request, out);
                         case UPLOAD_FILE:
+                            handleUploadRequest(request, in, out);
+                            break;
+                        case DOWNLOAD_FILE:
                             //TODO
                             break;
                         case CHANGE_USER_INFO:

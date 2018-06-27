@@ -1,10 +1,13 @@
 package application.client.modules;
 
+import application.client.controllers.GraphicController;
 import application.util.answer.Answer;
 import application.util.message.TextMessage;
 import application.util.request.GroupCreationRequest;
+import application.util.request.UploadFileRequest;
 import application.util.user.Info;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -29,6 +32,7 @@ public class LogicalEventHandler {
             e.printStackTrace();
         }
         Cache.clear();
+        GraphicController.clear();
     }
 
     public static void sendTextMessage(TextMessage message) {
@@ -43,5 +47,9 @@ public class LogicalEventHandler {
         groupMembers.add(Cache.getCurrentUser().getID());
         return Network.request(new GroupCreationRequest(Cache.getCurrentUser().getUsername(),
                 Cache.getCurrentUser().getPassword(), name, groupMembers));
+    }
+
+    public static void sendFileToServer(File file) {
+        Network.sendFile(file);
     }
 }

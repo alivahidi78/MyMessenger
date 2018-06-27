@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -100,5 +101,11 @@ public class ChatScene extends GraphicController implements Initializable {
 
     public void createGroup() {
         goTo("CreateGroupDialog");
+    }
+
+    public void sendFile() {
+        File file = chooseFile();
+        if(file!=null)
+            LogicalEventHandler.sendFileToServer(file);
     }
 }

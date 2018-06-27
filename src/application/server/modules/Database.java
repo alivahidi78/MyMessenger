@@ -20,7 +20,7 @@ public class Database implements Serializable {
     private static FileHandler<Database> fh = new FileHandler<>();
 
     static {
-        Optional<Database> databaseOptional = fh.readData("data/DATA");
+        Optional<Database> databaseOptional = fh.readObjectFromFile("data/DATA");
         instance = databaseOptional.orElseGet(Database::new);
     }
 
@@ -37,7 +37,7 @@ public class Database implements Serializable {
     }
 
     private void saveData() {
-        fh.saveData(instance, "data/DATA");
+        fh.saveObjectToFile(instance, "data/DATA");
     }
 
     public Optional<User> findUserByUsername(String username) {

@@ -45,7 +45,7 @@
                     </HBox>
                     <ListView id="message-list" fx:id="messageLogListView" prefHeight="200.0" prefWidth="195.0" VBox.vgrow="ALWAYS" />
                     <HBox alignment="BOTTOM_CENTER" prefHeight="42.0" prefWidth="598.0">
-                        <Button minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="45.0" text="File" />
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#sendFile" prefHeight="50.0" prefWidth="45.0" text="File" />
                         <TextArea fx:id="sendMessageTextArea" prefWidth="500.0" promptText="Write your message" wrapText="true" HBox.hgrow="ALWAYS" />
                         <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#sendMessage" prefHeight="50.0" prefWidth="45.0" text="Send" />
                     </HBox>

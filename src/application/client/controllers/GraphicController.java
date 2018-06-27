@@ -80,17 +80,12 @@ public class GraphicController {
         }
     }
 
-    static Image choosePicture(String defaultImgPath) {
+    static File chooseFile() {//TODO add extensions,title to parameter
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Picture");
+        fileChooser.setTitle("Choose File");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("All Images", "*.*"));//TODO list extensions
-        try {
-            File file = fileChooser.showOpenDialog(ClientMain.getStage());
-            return new Image("file:" + file.getAbsolutePath());
-        } catch (NullPointerException e) {
-            return new Image(defaultImgPath);
-        }
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        return fileChooser.showOpenDialog(ClientMain.getStage());
     }
 
     public static void loadUserInfoToList(Info info) {
@@ -158,5 +153,17 @@ public class GraphicController {
                     lastSeen.setValue("Last Seen at " + user.getLastSeen());
             }
         });
+    }
+
+    public static void clear() {
+        contactList = null;
+        chattingUser = null;
+        messages = null;
+        currentChat = null;
+        name = null;
+        id = null;
+        lastSeen = null;
+        selectedUser = null;
+        contactListFXML = null;
     }
 }
